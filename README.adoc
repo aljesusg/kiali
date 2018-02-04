@@ -1,4 +1,4 @@
-= SWS image:https://travis-ci.org/jmazzitelli/sws.svg["Build Status", link="https://travis-ci.org/jmazzitelli/sws"] image:https://goreportcard.com/badge/github.com/swift-sunshine/swscore["Go Report Card", link="https://goreportcard.com/report/github.com/swift-sunshine/swscore"]
+= SWS image:https://travis-ci.org/jmazzitelli/sws.svg["Build Status", link="https://travis-ci.org/jmazzitelli/sws"]
 :toc: macro
 :toc-title:
 
