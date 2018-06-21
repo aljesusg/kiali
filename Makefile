@@ -145,6 +145,25 @@ dep-update:
 	@glide update --strip-vendor
 
 #
+# Swagger Documentation
+#
+swagger-install:
+	go get -u github.com/go-swagger/go-swagger/cmd/swagger
+
+swagger-validate:
+	@swagger validate ./swagger.json
+
+swagger-gen:
+	@swagger generate spec -o ./swagger.json
+
+swagger-serve: swagger-validate
+	@swagger serve ./swagger.json
+
+swagger-travis: swagger-validate
+	swagger generate spec -o ./swagger_travis.json
+	@cmp ./swagger.json ./swagger_travis.json
+
+#
 # cloud targets - building images and deploying
 #
 

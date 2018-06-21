@@ -10,16 +10,53 @@ const (
 	StateRunning   = "running"
 )
 
+// HTTP status code 200 and user model in data
+// swagger:response statusInfo
+type swaggStatusInfoResp struct {
+	// in:body
+	Body struct {
+		// HTTP status code 200
+		Code int `json:"code"`
+		// StatusInfo model
+		Data StatusInfo `json:"data"`
+	}
+}
+
+// StatusInfo statusInfo
+//
+// This is used for returning a response of Kiali Status
+//
+// swagger:model StatusInfo
 type StatusInfo struct {
-	Status           map[string]string     `json:"status"`
+	// The state ok Kiali
+	// A hash of key,values with versions of Kiali and state
+	//
+	// required: true
+	Status map[string]string `json:"status"`
+	// An array of external services installed
+	//
+	// required: true
 	ExternalServices []ExternalServiceInfo `json:"externalServices"`
-	WarningMessages  []string              `json:"warningMessages"`
+	// An array of warningMessages
+	WarningMessages []string `json:"warningMessages"`
 }
 
 var info StatusInfo
 
+// Status response model
+//
+// This is used for returning a response of Kiali Status
+//
+// swagger:model externalServiceInfo
 type ExternalServiceInfo struct {
-	Name    string `json:"name"`
+	// The name of the service
+	//
+	// required: true
+	Name string `json:"name"`
+
+	// The installed version of the service
+	//
+	// required: true
 	Version string `json:"version"`
 }
 

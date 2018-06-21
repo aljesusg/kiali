@@ -1,0 +1,111 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "Kiali project, observability for the Istio service mesh",
+    "title": "Kiali",
+    "version": "0.2.0.Alpha"
+  },
+  "basePath": "/api",
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Handler to get the status",
+        "operationId": "getStatus",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/statusInfo"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "StatusInfo": {
+      "description": "This is used for returning a response of Kiali Status",
+      "type": "object",
+      "title": "StatusInfo statusInfo",
+      "required": [
+        "status",
+        "externalServices"
+      ],
+      "properties": {
+        "externalServices": {
+          "description": "An array of external services installed",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/externalServiceInfo"
+          },
+          "x-go-name": "ExternalServices"
+        },
+        "status": {
+          "description": "The state ok Kiali\nA hash of key,values with versions of Kiali and state",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "x-go-name": "Status"
+        },
+        "warningMessages": {
+          "description": "An array of warningMessages",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "WarningMessages"
+        }
+      },
+      "x-go-package": "github.com/kiali/kiali/status"
+    },
+    "externalServiceInfo": {
+      "description": "This is used for returning a response of Kiali Status",
+      "type": "object",
+      "title": "Status response model",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "description": "The name of the service",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "version": {
+          "description": "The installed version of the service",
+          "type": "string",
+          "x-go-name": "Version"
+        }
+      },
+      "x-go-name": "ExternalServiceInfo",
+      "x-go-package": "github.com/kiali/kiali/status"
+    }
+  },
+  "responses": {
+    "statusInfo": {
+      "description": "HTTP status code 200 and user model in data",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "HTTP status code 200",
+            "type": "integer",
+            "format": "int64",
+            "x-go-name": "Code"
+          },
+          "data": {
+            "$ref": "#/definitions/StatusInfo"
+          }
+        }
+      }
+    }
+  }
+}

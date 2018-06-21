@@ -7,6 +7,12 @@ import (
 	"github.com/kiali/kiali/status"
 )
 
+// swagger:route GET / getStatus
+// ---
+// Handler to get the status
+//
+// responses:
+//      200: statusInfo
 func Root(w http.ResponseWriter, r *http.Request) {
 	getStatus(w, r)
 }
