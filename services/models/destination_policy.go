@@ -4,32 +4,10 @@ import (
 	"github.com/kiali/kiali/kubernetes"
 )
 
-// DestinationPolicies destinationPolicies
-//
-// This is used for returning an array of DestinationPolicies
-//
-// swagger:model destinationPolicies
-// An array of destinationPolicie
-// swagger:allOf
 type DestinationPolicies []DestinationPolicy
-
-// DestinationPolicy destinationPolicy
-//
-// This is used for returning a DestinationPolicy
-//
-// swagger:model destinationPolicy
 type DestinationPolicy struct {
-	// The name of the destinationPolicy
-	//
-	// required: true
-	Name string `json:"name"`
-	// The creation date of the destinationPolicy
-	//
-	// required: true
-	CreatedAt string `json:"createdAt"`
-	// The resource version of the destinationPolicy
-	//
-	// required: true
+	Name            string      `json:"name"`
+	CreatedAt       string      `json:"createdAt"`
 	ResourceVersion string      `json:"resourceVersion"`
 	Source          interface{} `json:"source"`
 	Destination     interface{} `json:"destination"`
