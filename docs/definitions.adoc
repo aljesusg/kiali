@@ -1,0 +1,285 @@
+
+[[_definitions]]
+== Definitions
+
+[[_istioconfiglist]]
+=== IstioConfigList
+This is used for returning a response of IstioConfigList
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**destinationPolicies** +
+__optional__|**Example** : <<_destinationpolicies>>|<<definitions.adoc#_destinationpolicies,destinationPolicies>>
+|**destinationRules** +
+__optional__|**Example** : <<_destinationrules>>|<<definitions.adoc#_destinationrules,destinationRules>>
+|**namespace** +
+__required__|**Example** : <<_namespace>>|<<definitions.adoc#_namespace,namespace>>
+|**routeRules** +
+__optional__|**Example** : <<_routerules>>|<<definitions.adoc#_routerules,routeRules>>
+|**rules** +
+__optional__|**Example** : <<_istiorules>>|<<definitions.adoc#_istiorules,istioRules>>
+|**virtualServices** +
+__optional__|**Example** : <<_virtualservices>>|<<definitions.adoc#_virtualservices,virtualServices>>
+|===
+
+
+[[_statusinfo]]
+=== StatusInfo
+This is used for returning a response of Kiali Status
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**externalServices** +
+__required__|An array of external services installed +
+**Example** : `[ "<<_externalserviceinfo>>" ]`|< <<definitions.adoc#_externalserviceinfo,externalServiceInfo>> > array
+|**status** +
+__required__|The state of Kiali
+A hash of key,values with versions of Kiali and state +
+**Example** : `{
+  "string" : "string"
+}`|< string, string > map
+|**warningMessages** +
+__optional__|An array of warningMessages +
+**Example** : `[ "string" ]`|< string > array
+|===
+
+
+[[_tokengenerated]]
+=== TokenGenerated
+This is used for returning the token
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**expired_at** +
+__required__|The expired time for the token
+A string with the Datetime when the token will be expired +
+**Example** : `"2018-06-20 19:40:54.116369887 +0000 UTC m=+43224.838320603"`|string
+|**token** +
+__required__|The authentication token
+A string with the authentication token for the user +
+**Example** : `"zI1NiIsIsR5cCI6IkpXVCJ9.ezJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTI5NTIzNjU0fQ.PPZvRGnR6VA4v7FmgSfQcGQr-VD"`|string
+|===
+
+
+[[_destinationpolicies]]
+=== destinationPolicies
+This is used for returning an array of DestinationPolicies
+
+__Type__ : < <<definitions.adoc#_destinationpolicy,destinationPolicy>> > array
+
+
+[[_destinationpolicy]]
+=== destinationPolicy
+This is used for returning a DestinationPolicy
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**circuitBreaker** +
+__optional__|**Example** : `"object"`|object
+|**createdAt** +
+__required__|The creation date of the destinationPolicy +
+**Example** : `"string"`|string
+|**destination** +
+__optional__|**Example** : `"object"`|object
+|**loadbalancing** +
+__optional__|**Example** : `"object"`|object
+|**name** +
+__required__|The name of the destinationPolicy +
+**Example** : `"string"`|string
+|**resourceVersion** +
+__required__|The resource version of the destinationPolicy +
+**Example** : `"string"`|string
+|**source** +
+__optional__|**Example** : `"object"`|object
+|===
+
+
+[[_destinationrule]]
+=== destinationRule
+This is used for returning a DestinationRule
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**createdAt** +
+__required__|The creation date of the destinationRule +
+**Example** : `"string"`|string
+|**host** +
+__optional__|**Example** : `"object"`|object
+|**name** +
+__required__|The name of the destinationRule +
+**Example** : `"string"`|string
+|**resourceVersion** +
+__required__|The resource version of the destinationRule +
+**Example** : `"string"`|string
+|**subsets** +
+__optional__|**Example** : `"object"`|object
+|**trafficPolicy** +
+__optional__|**Example** : `"object"`|object
+|===
+
+
+[[_destinationrules]]
+=== destinationRules
+This is used for returning an array of DestinationRules
+
+__Type__ : < <<definitions.adoc#_destinationrule,destinationRule>> > array
+
+
+[[_externalserviceinfo]]
+=== externalServiceInfo
+This is used for returning a response of Kiali Status
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**name** +
+__required__|The name of the service +
+**Example** : `"Istio"`|string
+|**version** +
+__required__|The installed version of the service +
+**Example** : `"0.8.0"`|string
+|===
+
+
+[[_istiorule]]
+=== istioRule
+This is used for returning a IstioRule
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**actions** +
+__optional__|**Example** : `"object"`|object
+|**match** +
+__optional__|**Example** : `"object"`|object
+|**name** +
+__required__|The name of the istioRule +
+**Example** : `"string"`|string
+|===
+
+
+[[_istiorules]]
+=== istioRules
+This is used for returning an array of IstioRules
+
+__Type__ : < <<definitions.adoc#_istiorule,istioRule>> > array
+
+
+[[_namespace]]
+=== namespace
+It is used to describe a set of objects.
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**name** +
+__required__|The id of the namespace. +
+**Example** : `"istio-system"`|string
+|===
+
+
+[[_routerule]]
+=== routeRule
+This is used for returning a RouteRule
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**appendHeaders** +
+__optional__|**Example** : `"object"`|object
+|**corsPolicy** +
+__optional__|**Example** : `"object"`|object
+|**createdAt** +
+__required__|The created time +
+**Example** : `"2018-06-20T07:39:52Z"`|string
+|**destination** +
+__optional__|**Example** : `"object"`|object
+|**httpFault** +
+__optional__|**Example** : `"object"`|object
+|**httpReqRetries** +
+__optional__|**Example** : `"object"`|object
+|**httpReqTimeout** +
+__optional__|**Example** : `"object"`|object
+|**l4Fault** +
+__optional__|**Example** : `"object"`|object
+|**match** +
+__optional__|**Example** : `"object"`|object
+|**mirror** +
+__optional__|**Example** : `"object"`|object
+|**name** +
+__required__|The name of the routeRule +
+**Example** : `"details-default"`|string
+|**precedence** +
+__optional__|**Example** : `"object"`|object
+|**redirect** +
+__optional__|**Example** : `"object"`|object
+|**resourceVersion** +
+__required__|**Example** : `"1507"`|string
+|**rewrite** +
+__optional__|**Example** : `"object"`|object
+|**route** +
+__optional__|**Example** : `"object"`|object
+|**routeWarning** +
+__optional__|**Example** : `"string"`|string
+|**websocketUpgrade** +
+__optional__|**Example** : `"object"`|object
+|===
+
+
+[[_routerules]]
+=== routeRules
+This is used for returning an array of RouteRule
+
+__Type__ : < <<definitions.adoc#_routerule,routeRule>> > array
+
+
+[[_virtualservice]]
+=== virtualService
+This is used for returning a VirtualService
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**createdAt** +
+__required__|The creation date of the virtualService +
+**Example** : `"string"`|string
+|**gateways** +
+__optional__|**Example** : `"object"`|object
+|**hosts** +
+__optional__|**Example** : `"object"`|object
+|**http** +
+__optional__|**Example** : `"object"`|object
+|**name** +
+__required__|The name of the virtualService +
+**Example** : `"string"`|string
+|**resourceVersion** +
+__required__|The resource version of the virtualService +
+**Example** : `"string"`|string
+|**tcp** +
+__optional__|**Example** : `"object"`|object
+|===
+
+
+[[_virtualservices]]
+=== virtualServices
+This is used for returning an array of VirtualServices
+
+__Type__ : < <<definitions.adoc#_virtualservice,virtualService>> > array
+
+
+
