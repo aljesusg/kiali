@@ -159,6 +159,9 @@ swagger-gen:
 swagger-serve: swagger-validate
 	@swagger serve ./swagger.json
 
+swagger-doc: swagger-gen swagger-validate
+	@java -jar ./hack/generate/swagger2markup-cli-1.3.3.jar convert -i swagger.json -d ./docs/ -c ./hack/generate/config.properties
+
 #
 # cloud targets - building images and deploying
 #
