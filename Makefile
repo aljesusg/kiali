@@ -159,10 +159,6 @@ swagger-gen:
 swagger-serve: swagger-validate
 	@swagger serve ./swagger.json
 
-swagger-travis: swagger-validate
-	swagger generate spec -o ./swagger_travis.json
-	@cmp ./swagger.json ./swagger_travis.json
-
 #
 # cloud targets - building images and deploying
 #

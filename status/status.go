@@ -10,12 +10,13 @@ const (
 	StateRunning   = "running"
 )
 
-// HTTP status code 200 and user model in data
+// HTTP status code 200 and statusInfo model in data
 // swagger:response statusInfo
 type swaggStatusInfoResp struct {
 	// in:body
 	Body struct {
-		// HTTP status code 200
+		// HTTP status code
+		// default: 200
 		Code int `json:"code"`
 		// StatusInfo model
 		Data StatusInfo `json:"data"`
@@ -28,7 +29,7 @@ type swaggStatusInfoResp struct {
 //
 // swagger:model StatusInfo
 type StatusInfo struct {
-	// The state ok Kiali
+	// The state of Kiali
 	// A hash of key,values with versions of Kiali and state
 	//
 	// required: true
@@ -36,8 +37,11 @@ type StatusInfo struct {
 	// An array of external services installed
 	//
 	// required: true
+	// swagger:allOf
 	ExternalServices []ExternalServiceInfo `json:"externalServices"`
 	// An array of warningMessages
+	// items.example: Istio version 0.7.1 is not supported, the version should be 0.8.0
+	// swagger:allOf
 	WarningMessages []string `json:"warningMessages"`
 }
 
@@ -52,11 +56,13 @@ type ExternalServiceInfo struct {
 	// The name of the service
 	//
 	// required: true
+	// example: Istio
 	Name string `json:"name"`
 
 	// The installed version of the service
 	//
 	// required: true
+	// example: 0.8.0
 	Version string `json:"version"`
 }
 
