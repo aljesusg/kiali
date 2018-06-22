@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="main.css">
+    <meta charset="UTF-8">
+    <title>Kiali</title>
+                                                         </head>
+<body>
+<div class="container">
+    <h1>Kiali</h1>
+    <p class="sw-info">
+        Base URL: <span class="sw-info-basePath">/api</span>,
+        Version: <span class="sw-info-version">0.2.0.Alpha</span>
+    </p>
+    <p><p>Kiali project, observability for the Istio service mesh</p>
+    </p>
+    
+        <div id="sw-default-consumes" class="sw-default-value">
+            <span class="sw-default-value-header">Default request content-types:</span>
+            application/json
+        </div>
+        <div id="sw-default-produces" class="sw-default-value">
+            <span class="sw-default-value-header">Default response content-types:</span>
+            application/json
+        </div>
+    
+    <div id="sw-schemes" class="sw-default-value">
+        <span class="sw-default-value-header">Schemes:</span>
+        http
+    </div>
+    
+        <h2 id="swagger--summary-no-tags">Summary</h2>
+        <table class="table table-bordered table-condensed swagger--summary">
+            <thead>
+            <tr>
+                <th>Path</th>
+                <th>Operation</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                            <td class="swagger--summary-path" rowspan="1">
+                                <a href="#path--">/</a>
+                            </td>
+                        <td>
+                            <a href="#operation---get">GET</a>
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                            <td class="swagger--summary-path" rowspan="1">
+                                <a href="#path--namespaces--namespace--istio">/namespaces/{namespace}/istio</a>
+                            </td>
+                        <td>
+                            <a href="#operation--namespaces--namespace--istio-get">GET</a>
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                            <td class="swagger--summary-path" rowspan="1">
+                                <a href="#path--status">/status</a>
+                            </td>
+                        <td>
+                            <a href="#operation--status-get">GET</a>
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                            <td class="swagger--summary-path" rowspan="1">
+                                <a href="#path--token">/token</a>
+                            </td>
+                        <td>
+                            <a href="#operation--token-get">GET</a>
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    
+    
+    
+    <h2>Paths</h2>
+    
+        
+        <span id="path--"></span>
+            <div id="operation---get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary"></div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>Handler to get the status of Kiali</p>
+            
+                    </section>
+            
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
+                            </section>        
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                            <span class="swagger--global"></span> <span class="json-schema--reference"><a href="#/responses/statusInfo">#/responses/statusInfo</a></span>
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>HTTP status code 200 and statusInfo model in data</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                    <section class="json-schema-properties">
+                                                                        <dl>
+                                                                                <dt data-property-name="code">
+                                                                                    <span class="json-property-name">code:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                            <span class="json-property-default-value">200</span>
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    <p>HTTP status code</p>
+                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                                <dt data-property-name="data">
+                                                                                    <span class="json-property-name">data:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/StatusInfo">StatusInfo</a>
+                                                                                    </span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                        </dl>
+                                                                    </section>
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+        
+        <span id="path--namespaces--namespace--istio"></span>
+            <div id="operation--namespaces--namespace--istio-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary"></div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/namespaces/{namespace}/istio</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>Handler to get the list of Istio Config of a namespace</p>
+            
+                    </section>
+            
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
+                            </section>        
+                        <section class="sw-request-params">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="sw-param-name"></th>
+                                    <th class="sw-param-description"></th>
+                                    <th class="sw-param-type"></th>
+                                    <th class="sw-param-data-type"></th>
+                                    <th class="sw-param-annotation"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                                namespace
+                                            </td>
+                                            <td><p>The id of the namespace.</p>
+                                        </td>
+                                            <td>path</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                            <span class="swagger--global"></span> <span class="json-schema--reference"><a href="#/responses/istioConfigList">#/responses/istioConfigList</a></span>
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>HTTP status code 200 and IstioConfigList model in data</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                    <section class="json-schema-properties">
+                                                                        <dl>
+                                                                                <dt data-property-name="code">
+                                                                                    <span class="json-property-name">code:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                            <span class="json-property-default-value">200</span>
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    <p>HTTP status code</p>
+                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                                <dt data-property-name="data">
+                                                                                    <span class="json-property-name">data:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/IstioConfigList">IstioConfigList</a>
+                                                                                    </span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                        </dl>
+                                                                    </section>
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+        
+        <span id="path--status"></span>
+            <div id="operation--status-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary"></div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/status</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>Handler to get the status of Kiali</p>
+            
+                    </section>
+            
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
+                            </section>        
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                            <span class="swagger--global"></span> <span class="json-schema--reference"><a href="#/responses/statusInfo">#/responses/statusInfo</a></span>
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>HTTP status code 200 and statusInfo model in data</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                    <section class="json-schema-properties">
+                                                                        <dl>
+                                                                                <dt data-property-name="code">
+                                                                                    <span class="json-property-name">code:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                            <span class="json-property-default-value">200</span>
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    <p>HTTP status code</p>
+                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                                <dt data-property-name="data">
+                                                                                    <span class="json-property-name">data:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/StatusInfo">StatusInfo</a>
+                                                                                    </span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                        </dl>
+                                                                    </section>
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+        
+        <span id="path--token"></span>
+            <div id="operation--token-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary"></div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/token</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>Handler to get the authentication token</p>
+            
+                    </section>
+            
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
+                            </section>        
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                            <span class="swagger--global"></span> <span class="json-schema--reference"><a href="#/responses/tokenGenerated">#/responses/tokenGenerated</a></span>
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>HTTP status code 200 and tokenGenerated model in data</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                    <section class="json-schema-properties">
+                                                                        <dl>
+                                                                                <dt data-property-name="code">
+                                                                                    <span class="json-property-name">code:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                            <span class="json-property-default-value">200</span>
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    <p>HTTP status code</p>
+                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                                <dt data-property-name="data">
+                                                                                    <span class="json-property-name">data:</span>
+                                                                                    
+                                                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/TokenGenerated">TokenGenerated</a>
+                                                                                    </span>
+                                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                                    
+                                                                                </dt>
+                                                                                <dd>
+                                                                                    
+                                                                                    <div class="json-inner-schema">
+                                                                                        
+                                                                                    </div>
+                                                                                </dd>
+                                                                        </dl>
+                                                                    </section>
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                        <section class="sw-request-security">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="sw-request-security-schema"></th>
+                                    <th class="sw-request-security-scopes"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td><a href="#security-definition-authorization">authorization</a></td>
+                                            <td>
+                                                    user
+                                                    , password
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                </div>
+            </div>
+    
+     
+    <h2>Response definitions</h2>
+    
+    <dl id="sw-response-definitions">
+            <dt><a name="/responses/istioConfigList"></a>istioConfigList</dt>
+            <dd>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>HTTP status code 200 and IstioConfigList model in data</p>
+                
+                    </div>
+                </div>
+                <div class="row">
+                    
+                    <div class="col-md-6 sw-response-model">
+                    <div  class="panel panel-definition">
+                        <div class="panel-body">
+                                
+                                        <section class="json-schema-properties">
+                                            <dl>
+                                                    <dt data-property-name="code">
+                                                        <span class="json-property-name">code:</span>
+                                                        
+                                                        <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                        <span class="json-property-range" title="Value limits"></span>
+                                                        
+                                                                <span class="json-property-default-value">200</span>
+                                                    </dt>
+                                                    <dd>
+                                                        <p>HTTP status code</p>
+                                        
+                                                        <div class="json-inner-schema">
+                                                            
+                                                        </div>
+                                                    </dd>
+                                                    <dt data-property-name="data">
+                                                        <span class="json-property-name">data:</span>
+                                                        
+                                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/IstioConfigList">IstioConfigList</a>
+                                                        </span>
+                                                        <span class="json-property-range" title="Value limits"></span>
+                                                        
+                                                    </dt>
+                                                    <dd>
+                                                        
+                                                        <div class="json-inner-schema">
+                                                            
+                                                        </div>
+                                                    </dd>
+                                            </dl>
+                                        </section>
+                        </div>
+                    </div></div>
+                
+                </div>        </dd>
+            <dt><a name="/responses/statusInfo"></a>statusInfo</dt>
+            <dd>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>HTTP status code 200 and statusInfo model in data</p>
+                
+                    </div>
+                </div>
+                <div class="row">
+                    
+                    <div class="col-md-6 sw-response-model">
+                    <div  class="panel panel-definition">
+                        <div class="panel-body">
+                                
+                                        <section class="json-schema-properties">
+                                            <dl>
+                                                    <dt data-property-name="code">
+                                                        <span class="json-property-name">code:</span>
+                                                        
+                                                        <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                        <span class="json-property-range" title="Value limits"></span>
+                                                        
+                                                                <span class="json-property-default-value">200</span>
+                                                    </dt>
+                                                    <dd>
+                                                        <p>HTTP status code</p>
+                                        
+                                                        <div class="json-inner-schema">
+                                                            
+                                                        </div>
+                                                    </dd>
+                                                    <dt data-property-name="data">
+                                                        <span class="json-property-name">data:</span>
+                                                        
+                                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/StatusInfo">StatusInfo</a>
+                                                        </span>
+                                                        <span class="json-property-range" title="Value limits"></span>
+                                                        
+                                                    </dt>
+                                                    <dd>
+                                                        
+                                                        <div class="json-inner-schema">
+                                                            
+                                                        </div>
+                                                    </dd>
+                                            </dl>
+                                        </section>
+                        </div>
+                    </div></div>
+                
+                </div>        </dd>
+            <dt><a name="/responses/tokenGenerated"></a>tokenGenerated</dt>
+            <dd>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>HTTP status code 200 and tokenGenerated model in data</p>
+                
+                    </div>
+                </div>
+                <div class="row">
+                    
+                    <div class="col-md-6 sw-response-model">
+                    <div  class="panel panel-definition">
+                        <div class="panel-body">
+                                
+                                        <section class="json-schema-properties">
+                                            <dl>
+                                                    <dt data-property-name="code">
+                                                        <span class="json-property-name">code:</span>
+                                                        
+                                                        <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                        <span class="json-property-range" title="Value limits"></span>
+                                                        
+                                                                <span class="json-property-default-value">200</span>
+                                                    </dt>
+                                                    <dd>
+                                                        <p>HTTP status code</p>
+                                        
+                                                        <div class="json-inner-schema">
+                                                            
+                                                        </div>
+                                                    </dd>
+                                                    <dt data-property-name="data">
+                                                        <span class="json-property-name">data:</span>
+                                                        
+                                                        <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/TokenGenerated">TokenGenerated</a>
+                                                        </span>
+                                                        <span class="json-property-range" title="Value limits"></span>
+                                                        
+                                                    </dt>
+                                                    <dd>
+                                                        
+                                                        <div class="json-inner-schema">
+                                                            
+                                                        </div>
+                                                    </dd>
+                                            </dl>
+                                        </section>
+                        </div>
+                    </div></div>
+                
+                </div>        </dd>
+    </dl>
+    
+                       
+        <h2>Schema definitions</h2>
+    
+            
+                <div id="definition-destinationPolicies" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/destinationPolicies"></a>destinationPolicies:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object[]</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning an array of DestinationPolicies</p>
+                            
+                                </section>
+                            
+                                            <section class="json-schema-array-items">
+                                                
+                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/destinationPolicy">destinationPolicy</a>
+                                                </span>
+                                                <span class="json-property-range" title="Value limits"></span>
+                                                
+                                                <div class="json-inner-schema">
+                                                    
+                                                </div>
+                                            </section>    </div>
+                </div>        
+                <div id="definition-destinationPolicy" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/destinationPolicy"></a>destinationPolicy:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a DestinationPolicy</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="circuitBreaker">
+                                                    <span class="json-property-name">circuitBreaker:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="createdAt">
+                                                    <span class="json-property-name">createdAt:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The creation date of the destinationPolicy</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="destination">
+                                                    <span class="json-property-name">destination:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="loadbalancing">
+                                                    <span class="json-property-name">loadbalancing:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The name of the destinationPolicy</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="resourceVersion">
+                                                    <span class="json-property-name">resourceVersion:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The resource version of the destinationPolicy</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="source">
+                                                    <span class="json-property-name">source:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-destinationRule" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/destinationRule"></a>destinationRule:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a DestinationRule</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="createdAt">
+                                                    <span class="json-property-name">createdAt:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The creation date of the destinationRule</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="host">
+                                                    <span class="json-property-name">host:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The name of the destinationRule</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="resourceVersion">
+                                                    <span class="json-property-name">resourceVersion:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The resource version of the destinationRule</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="subsets">
+                                                    <span class="json-property-name">subsets:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="trafficPolicy">
+                                                    <span class="json-property-name">trafficPolicy:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-destinationRules" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/destinationRules"></a>destinationRules:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object[]</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning an array of DestinationRules</p>
+                            
+                                </section>
+                            
+                                            <section class="json-schema-array-items">
+                                                
+                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/destinationRule">destinationRule</a>
+                                                </span>
+                                                <span class="json-property-range" title="Value limits"></span>
+                                                
+                                                <div class="json-inner-schema">
+                                                    
+                                                </div>
+                                            </section>    </div>
+                </div>        
+                <div id="definition-externalServiceInfo" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/externalServiceInfo"></a>externalServiceInfo:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a response of Kiali Status</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The name of the service</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;Istio&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="version">
+                                                    <span class="json-property-name">version:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The installed version of the service</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;0.8.0&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-IstioConfigList" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/IstioConfigList"></a>IstioConfigList:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a response of IstioConfigList</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="destinationPolicies">
+                                                    <span class="json-property-name">destinationPolicies:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/destinationPolicies">destinationPolicies</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="destinationRules">
+                                                    <span class="json-property-name">destinationRules:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/destinationRules">destinationRules</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="namespace">
+                                                    <span class="json-property-name">namespace:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/namespace">namespace</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="routeRules">
+                                                    <span class="json-property-name">routeRules:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/routeRules">routeRules</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="rules">
+                                                    <span class="json-property-name">rules:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/istioRules">istioRules</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="virtualServices">
+                                                    <span class="json-property-name">virtualServices:</span>
+                                                    
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/virtualServices">virtualServices</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-istioRule" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/istioRule"></a>istioRule:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a IstioRule</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="actions">
+                                                    <span class="json-property-name">actions:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="match">
+                                                    <span class="json-property-name">match:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The name of the istioRule</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-istioRules" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/istioRules"></a>istioRules:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object[]</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning an array of IstioRules</p>
+                            
+                                </section>
+                            
+                                            <section class="json-schema-array-items">
+                                                
+                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/istioRule">istioRule</a>
+                                                </span>
+                                                <span class="json-property-range" title="Value limits"></span>
+                                                
+                                                <div class="json-inner-schema">
+                                                    
+                                                </div>
+                                            </section>    </div>
+                </div>        
+                <div id="definition-namespace" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/namespace"></a>namespace:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>It is used to describe a set of objects.</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The id of the namespace.</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;istio-system&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-routeRule" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/routeRule"></a>routeRule:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a RouteRule</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="appendHeaders">
+                                                    <span class="json-property-name">appendHeaders:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="corsPolicy">
+                                                    <span class="json-property-name">corsPolicy:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="createdAt">
+                                                    <span class="json-property-name">createdAt:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The created time</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;2018-06-20T07:39:52Z&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="destination">
+                                                    <span class="json-property-name">destination:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="httpFault">
+                                                    <span class="json-property-name">httpFault:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="httpReqRetries">
+                                                    <span class="json-property-name">httpReqRetries:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="httpReqTimeout">
+                                                    <span class="json-property-name">httpReqTimeout:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="l4Fault">
+                                                    <span class="json-property-name">l4Fault:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="match">
+                                                    <span class="json-property-name">match:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="mirror">
+                                                    <span class="json-property-name">mirror:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The name of the routeRule</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;details-default&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="precedence">
+                                                    <span class="json-property-name">precedence:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="redirect">
+                                                    <span class="json-property-name">redirect:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="resourceVersion">
+                                                    <span class="json-property-name">resourceVersion:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;1507&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="rewrite">
+                                                    <span class="json-property-name">rewrite:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="route">
+                                                    <span class="json-property-name">route:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="routeWarning">
+                                                    <span class="json-property-name">routeWarning:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="websocketUpgrade">
+                                                    <span class="json-property-name">websocketUpgrade:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-routeRules" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/routeRules"></a>routeRules:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object[]</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning an array of RouteRule</p>
+                            
+                                </section>
+                            
+                                            <section class="json-schema-array-items">
+                                                
+                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/routeRule">routeRule</a>
+                                                </span>
+                                                <span class="json-property-range" title="Value limits"></span>
+                                                
+                                                <div class="json-inner-schema">
+                                                    
+                                                </div>
+                                            </section>    </div>
+                </div>        
+                <div id="definition-StatusInfo" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/StatusInfo"></a>StatusInfo:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a response of Kiali Status</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="externalServices">
+                                                    <span class="json-property-name">externalServices:</span>
+                                                    
+                                                    <span class="json-property-type">object[]</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>An array of external services installed</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                                        <section class="json-schema-array-items">
+                                                                            
+                                                                            <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/externalServiceInfo">externalServiceInfo</a>
+                                                                            </span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </section>                </div>
+                                                </dd>
+                                                <dt data-property-name="status">
+                                                    <span class="json-property-name">status:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The state of Kiali
+                                    A hash of key,values with versions of Kiali and state</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                                    <section class="json-schema-additionalProperties">
+                                                                        <span class="json-property-type">
+                                                                    <span class="json-property-type">string</span>
+                                                                    <span class="json-property-range" title="Value limits"></span>
+                                                                    
+                                                                    </span>
+                                                                        
+                                                                    </section>
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="warningMessages">
+                                                    <span class="json-property-name">warningMessages:</span>
+                                                    
+                                                    <span class="json-property-type">string[]</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    <p>An array of warningMessages</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                                        <section class="json-schema-array-items">
+                                                                            
+                                                                            <span class="json-property-type">string</span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                    <section class="json-schema-example">
+                                                                                        <pre><code class="lang-json"><span class="hljs-string">&quot;Istio version 0.7.1 is not supported, the version should be 0.8.0&quot;</span>
+                                                                                </code></pre>
+                                                                                
+                                                                                    </section>
+                                                                                
+                                                                            </div>
+                                                                        </section>                </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-TokenGenerated" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/TokenGenerated"></a>TokenGenerated:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning the token</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="expired_at">
+                                                    <span class="json-property-name">expired_at:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The expired time for the token
+                                    A string with the Datetime when the token will be expired</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;2018-06-20 19:40:54.116369887 +0000 UTC m=+43224.838320603&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="token">
+                                                    <span class="json-property-name">token:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The authentication token
+                                    A string with the authentication token for the user</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                            <section class="json-schema-example">
+                                                                <pre><code class="lang-json"><span class="hljs-string">&quot;zI1NiIsIsR5cCI6IkpXVCJ9.ezJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTI5NTIzNjU0fQ.PPZvRGnR6VA4v7FmgSfQcGQr-VD&quot;</span>
+                                                        </code></pre>
+                                                        
+                                                            </section>
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-virtualService" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/virtualService"></a>virtualService:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning a VirtualService</p>
+                            
+                                </section>
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="createdAt">
+                                                    <span class="json-property-name">createdAt:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The creation date of the virtualService</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="gateways">
+                                                    <span class="json-property-name">gateways:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="hosts">
+                                                    <span class="json-property-name">hosts:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="http">
+                                                    <span class="json-property-name">http:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="name">
+                                                    <span class="json-property-name">name:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The name of the virtualService</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="resourceVersion">
+                                                    <span class="json-property-name">resourceVersion:</span>
+                                                    
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                        <span class="json-property-required"></span>
+                                                </dt>
+                                                <dd>
+                                                    <p>The resource version of the virtualService</p>
+                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="tcp">
+                                                    <span class="json-property-name">tcp:</span>
+                                                    
+                                                    <span class="json-property-type">object</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
+                <div id="definition-virtualServices" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/virtualServices"></a>virtualServices:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object[]</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                                <section class="json-schema-description">
+                                    <p>This is used for returning an array of VirtualServices</p>
+                            
+                                </section>
+                            
+                                            <section class="json-schema-array-items">
+                                                
+                                                <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/virtualService">virtualService</a>
+                                                </span>
+                                                <span class="json-property-range" title="Value limits"></span>
+                                                
+                                                <div class="json-inner-schema">
+                                                    
+                                                </div>
+                                            </section>    </div>
+                </div>
+</div>
+<script src="bundle.js" type="application/javascript"></script>
+</body>
+</html>
