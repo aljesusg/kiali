@@ -22,6 +22,8 @@ func ParseAppenders(o graph.TelemetryOptions) []graph.Appender {
 	if !o.Appenders.All {
 		for _, appenderName := range o.Appenders.AppenderNames {
 			switch appenderName {
+			case AnnotationAppenderName:
+				requestedAppenders[AnnotationAppenderName] = true
 			case AggregateNodeAppenderName:
 				requestedAppenders[AggregateNodeAppenderName] = true
 			case DeadNodeAppenderName:
@@ -128,6 +130,10 @@ func ParseAppenders(o graph.TelemetryOptions) []graph.Appender {
 		a := SidecarsCheckAppender{}
 		appenders = append(appenders, a)
 	}
+	if _, ok := requestedAppenders[AnnotationAppenderName]; ok || o.Appenders.All {
+		a := AnnotationAppender{}
+		appenders = append(appenders, a)
+	}
 
 	return appenders
 }
@@ -161,6 +167,18 @@ func getServiceDefinitionList(ni *graph.AppenderNamespaceInfo) *models.ServiceDe
 		return sdl.(*models.ServiceDefinitionList)
 	}
 	return nil
+}
+
+func getService(serviceName string, ni *graph.AppenderNamespaceInfo) (*models.Service, bool) {
+	if serviceName == "" || serviceName == graph.Unknown {
+		return nil, false
+	}
+	for _, srv := range getServiceDefinitionList(ni).ServiceDefinitions {
+		if srv.Service.Name == serviceName {
+			return &srv.Service, true
+		}
+	}
+	return nil, false
 }
 
 func getServiceEntryHosts(gi *graph.AppenderGlobalInfo) (serviceEntryHosts, bool) {

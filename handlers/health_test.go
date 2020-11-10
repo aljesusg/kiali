@@ -13,6 +13,7 @@ import (
 	"github.com/prometheus/common/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	core_v1 "k8s.io/api/core/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kiali/kiali/business"
@@ -158,6 +159,7 @@ func setupServiceHealthEndpoint(t *testing.T) (*httptest.Server, *kubetest.K8SCl
 
 	setupMockData(k8s)
 
+	k8s.On("GetService", mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(&core_v1.Service{}, nil)
 	mr := mux.NewRouter()
 
 	mr.HandleFunc("/api/namespaces/{namespace}/services/{service}/health", http.HandlerFunc(

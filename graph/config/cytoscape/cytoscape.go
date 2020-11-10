@@ -71,6 +71,7 @@ type NodeData struct {
 	HasCB           bool                `json:"hasCB,omitempty"`           // true (has circuit breaker) | false
 	HasMissingSC    bool                `json:"hasMissingSC,omitempty"`    // true (has missing sidecar) | false
 	HasVS           bool                `json:"hasVS,omitempty"`           // true (has route rule) | false
+	HealthAnnotation      []interface{}       `json:"healthAnnotation,omitempty"`      // requested healthAnnotation for NodeType
 	IsDead          bool                `json:"isDead,omitempty"`          // true (has no pods) | false
 	IsGroup         string              `json:"isGroup,omitempty"`         // set to the grouping type, current values: [ 'app', 'version' ]
 	IsInaccessible  bool                `json:"isInaccessible,omitempty"`  // true if the node exists in an inaccessible namespace
@@ -198,6 +199,11 @@ func buildConfig(trafficMap graph.TrafficMap, nodes *[]*NodeWrapper, edges *[]*E
 		}
 
 		addNodeTelemetry(n, nd)
+
+		// set annotations, if available
+		if val, ok := n.Metadata[graph.Annotation]; ok {
+			nd.HealthAnnotation = val.([]interface{})
+		}
 
 		// node may have deployment but no pods running)
 		if val, ok := n.Metadata[graph.IsDead]; ok {

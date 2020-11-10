@@ -1,8 +1,14 @@
 package models
 
 import (
+	"encoding/json"
+	"errors"
+
 	"github.com/prometheus/common/model"
 )
+
+const HealthConfiguration = "health_config"
+const HealthConfigurationRates = "rate"
 
 // NamespaceAppHealth is an alias of map of app name x health
 type NamespaceAppHealth map[string]*AppHealth
@@ -25,7 +31,7 @@ type AppHealth struct {
 }
 
 func NewEmptyRequestHealth() RequestHealth {
-	return RequestHealth{Inbound: make(map[string]map[string]float64), Outbound: make(map[string]map[string]float64)}
+	return RequestHealth{Inbound: make(map[string]map[string]float64), Outbound: make(map[string]map[string]float64), Config: nil}
 }
 
 // EmptyAppHealth create an empty AppHealth
@@ -89,6 +95,7 @@ type ProxyStatus struct {
 type RequestHealth struct {
 	Inbound  map[string]map[string]float64 `json:"inbound"`
 	Outbound map[string]map[string]float64 `json:"outbound"`
+	Config   interface{}                   `json:"config"`
 }
 
 // AggregateInbound adds the provided metric sample to internal inbound counters and updates error ratios
@@ -156,4 +163,16 @@ func (ps ProxyStatus) IsSynced() bool {
 // isComponentStatusSynced returns true when componentStatus is Synced
 func isComponentStatusSynced(componentStatus string) bool {
 	return componentStatus == "Synced"
+}
+
+func GetHealthConfiguration(annotations map[string]string) (interface{}, error) {
+	var data map[string]interface{}
+	if kialiConf, ok := annotations["kiali"]; ok {
+		err := json.Unmarshal([]byte(kialiConf), &data)
+		if err != nil {
+			return "", err
+		}
+		return data[HealthConfiguration].(map[string]interface{})[HealthConfigurationRates], nil
+	}
+	return "", errors.New("No Kiali Health configuration in Annotations")
 }

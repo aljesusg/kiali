@@ -291,9 +291,23 @@ func fillWorkloadRequestRates(allHealth models.NamespaceWorkloadHealth, rates mo
 func (in *HealthService) getServiceRequestsHealth(namespace, service, rateInterval string, queryTime time.Time) (models.RequestHealth, error) {
 	rqHealth := models.NewEmptyRequestHealth()
 	inbound, err := in.prom.GetServiceRequestRates(namespace, service, rateInterval, queryTime)
+	if err != nil {
+		return rqHealth, err
+	}
 	for _, sample := range inbound {
 		rqHealth.AggregateInbound(sample)
 	}
+
+	svc, err := in.k8s.GetService(namespace, service)
+	if err != nil {
+		return rqHealth, err
+	}
+	var errh error
+	rqHealth.Config, errh = models.GetHealthConfiguration(svc.Annotations)
+	if errh != nil {
+		log.Debugf("Error Getting Kiali Health Configuration. %s", errh.Error())
+	}
+
 	return rqHealth, err
 }
 
@@ -312,11 +326,26 @@ func (in *HealthService) getAppRequestsHealth(namespace, app, rateInterval strin
 func (in *HealthService) getWorkloadRequestsHealth(namespace, workload, rateInterval string, queryTime time.Time) (models.RequestHealth, error) {
 	rqHealth := models.NewEmptyRequestHealth()
 	inbound, outbound, err := in.prom.GetWorkloadRequestRates(namespace, workload, rateInterval, queryTime)
+	if err != nil {
+		return rqHealth, err
+	}
 	for _, sample := range inbound {
 		rqHealth.AggregateInbound(sample)
 	}
 	for _, sample := range outbound {
 		rqHealth.AggregateOutbound(sample)
+	}
+
+	w, err := in.businessLayer.Workload.GetWorkload(namespace, workload, "", false)
+	if err != nil {
+		return rqHealth, err
+	}
+	if len(w.Pods) > 0 {
+		var errh error
+		rqHealth.Config, errh = models.GetHealthConfiguration(w.Pods[0].Annotations)
+		if errh != nil {
+			log.Debugf("Error Getting Kiali Health Configuration. %s", errh.Error())
+		}
 	}
 	return rqHealth, err
 }
