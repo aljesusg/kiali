@@ -2,7 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 
 	"github.com/prometheus/common/model"
 )
@@ -172,7 +172,10 @@ func GetHealthConfiguration(annotations map[string]string) (interface{}, error) 
 		if err != nil {
 			return "", err
 		}
-		return data[HealthConfiguration].(map[string]interface{})[HealthConfigurationRates], nil
+		if healthConfig, ok := data[HealthConfiguration]; ok {
+			return healthConfig.(map[string]interface{})[HealthConfigurationRates], nil
+		}
+		return "", fmt.Errorf("No Kiali Health configuration in Annotations. There is not %s key inside kiali object", HealthConfiguration)
 	}
-	return "", errors.New("No Kiali Health configuration in Annotations")
+	return "", fmt.Errorf("No Kiali Health configuration in Annotations")
 }

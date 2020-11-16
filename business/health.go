@@ -199,6 +199,7 @@ func (in *HealthService) getNamespaceServiceHealth(namespace string, services []
 	// Prepare all data (note that it's important to provide data for all services, even those which may not have any health, for overview cards)
 	for _, service := range services {
 		h := models.EmptyServiceHealth()
+		h.Requests.Config, _ = models.GetHealthConfiguration(service.Annotations)
 		allHealth[service.Name] = &h
 	}
 
@@ -237,6 +238,7 @@ func (in *HealthService) getNamespaceWorkloadHealth(namespace string, ws models.
 	allHealth := make(models.NamespaceWorkloadHealth)
 	for _, w := range ws {
 		allHealth[w.Name] = models.EmptyWorkloadHealth()
+		allHealth[w.Name].Requests.Config, _ = models.GetHealthConfiguration(w.Annotations)
 		allHealth[w.Name].WorkloadStatus = w.CastWorkloadStatus()
 		if w.IstioSidecar {
 			hasSidecar = true

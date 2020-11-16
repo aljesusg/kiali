@@ -121,7 +121,7 @@ func TestGetWorkloadHealth(t *testing.T) {
 
 	health, _ := hs.GetWorkloadHealth("ns", "reviews-v1", "", "1m", queryTime)
 
-	k8s.AssertNumberOfCalls(t, "GetDeployment", 1)
+	k8s.AssertNumberOfCalls(t, "GetDeployment", 2)
 	prom.AssertNumberOfCalls(t, "GetWorkloadRequestRates", 1)
 	var result = map[string]map[string]float64{
 		"http": {

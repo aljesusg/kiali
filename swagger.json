@@ -5322,13 +5322,6 @@
           "type": "string",
           "x-go-name": "Aggregate"
         },
-        "annotation": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          },
-          "x-go-name": "Annotation"
-        },
         "app": {
           "type": "string",
           "x-go-name": "App"
@@ -5351,6 +5344,13 @@
         "hasVS": {
           "type": "boolean",
           "x-go-name": "HasVS"
+        },
+        "healthAnnotation": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "x-go-name": "HealthAnnotation"
         },
         "id": {
           "description": "Cytoscape Fields",
