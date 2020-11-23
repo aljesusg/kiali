@@ -23,7 +23,8 @@ type ServiceOverview struct {
 	// example: rest
 	// required: false
 	AdditionalDetailSample *AdditionalItem `json:"additionalDetailSample"`
-
+	// Annotations of the service
+	Annotations     map[string]string `json:"annotations"`
 	// Labels for Service
 	Labels map[string]string `json:"labels"`
 }
