@@ -1,6 +1,7 @@
 import Namespace from './Namespace';
 import { WorkloadHealth, WorkloadHealthResponse } from './Health';
-import { ObjectReference, Pod, Service, Validations } from './IstioObjects';
+import { ObjectReference, Pod, Validations } from './IstioObjects';
+import { Service } from './ServiceInfo';
 import { Runtime } from './Runtimes';
 
 export interface WorkloadId {

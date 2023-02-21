@@ -4,6 +4,9 @@ import { ValidationTypes } from '../../types/IstioObjects';
 export const SERVICE_DETAILS: ServiceDetailsInfo = {
   service: {
     name: 'reviews',
+    namespace: {
+      name: 'bookinfo'
+    },
     createdAt: '2018-06-29T16:43:18+02:00',
     type: 'ClusterIP',
     externalName: 'my.database.example.com',
