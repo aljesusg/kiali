@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Card, CardBody, CardHeader, Title, TitleSizes, Tooltip, TooltipPosition } from '@patternfly/react-core';
-import { ServiceDetailsInfo, WorkloadOverview } from '../../types/ServiceInfo';
+import { ServiceDetailsInfo, WorkloadOverview } from '../../types';
 import { AppWorkload } from '../../types/App';
 import { serverConfig } from '../../config';
 import Labels from '../../components/Label/Labels';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cellWidth, ICell, Table, TableHeader, TableBody } from '@patternfly/react-table';
 import Slider from './Slider/Slider';
-import { WorkloadOverview } from '../../types/ServiceInfo';
+import { WorkloadOverview } from '../../types';
 import { style } from 'typestyle';
 import { PFColors } from '../Pf/PfColors';
 import { Button, ButtonVariant, TooltipPosition } from '@patternfly/react-core';

@@ -95,20 +95,23 @@ class WorkloadListPageComponent extends FilterComponent.Component<
   getDeploymentItems = (data: WorkloadNamespaceResponse): WorkloadListItem[] => {
     if (data.workloads) {
       return data.workloads.map(deployment => ({
-        namespace: data.namespace.name,
-        name: deployment.name,
-        type: deployment.type,
-        appLabel: deployment.appLabel,
-        versionLabel: deployment.versionLabel,
-        istioSidecar: deployment.istioSidecar,
         additionalDetailSample: deployment.additionalDetailSample,
+        appLabel: deployment.appLabel,
+        createdAt: deployment.createdAt,
         health: WorkloadHealth.fromJson(data.namespace.name, deployment.name, deployment.health, {
           rateInterval: this.props.duration,
           hasSidecar: deployment.istioSidecar
         }),
-        labels: deployment.labels,
         istioReferences: sortIstioReferences(deployment.istioReferences, true),
-        notCoveredAuthPolicy: hasMissingAuthPolicy(deployment.name, data.validations)
+        istioSidecar: deployment.istioSidecar,
+        labels: deployment.labels,
+        name: deployment.name,
+        namespace: data.namespace.name,
+        notCoveredAuthPolicy: hasMissingAuthPolicy(deployment.name, data.validations),
+        serviceAccountNames: deployment.serviceAccountNames,
+        resourceVersion: deployment.resourceVersion,
+        type: deployment.type,
+        versionLabel: deployment.versionLabel
       }));
     }
     return [];

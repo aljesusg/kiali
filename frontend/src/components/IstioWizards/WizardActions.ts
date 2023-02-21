@@ -1,5 +1,5 @@
 import { TLSStatus } from '../../types/TLSStatus';
-import { getServicePort, WorkloadOverview } from '../../types/ServiceInfo';
+import { getServicePort, WorkloadOverview } from '../../types';
 import { WorkloadWeight } from './TrafficShifting';
 import { Rule } from './RequestRouting/Rules';
 import { K8sRule } from './K8sRequestRouting/K8sRules';
@@ -2053,10 +2053,12 @@ export const buildWorkloadInjectionPatch = (workloadType: string, enable: boolea
 };
 
 export const buildAnnotationPatch = (annotations: { [key: string]: string }): string => {
-  const patch = [{
-    "op": "replace",
-    "path": "/metadata/annotations",    
-    "value": annotations
-  }];  
+  const patch = [
+    {
+      op: 'replace',
+      path: '/metadata/annotations',
+      value: annotations
+    }
+  ];
   return JSON.stringify(patch);
 };

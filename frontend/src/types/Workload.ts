@@ -60,16 +60,19 @@ export const WorkloadType = {
 };
 
 export interface WorkloadOverview {
-  name: string;
-  type: string;
-  istioSidecar: boolean;
   additionalDetailSample?: AdditionalItem;
   appLabel: boolean;
-  versionLabel: boolean;
-  labels: { [key: string]: string };
-  istioReferences: ObjectReference[];
-  notCoveredAuthPolicy: boolean;
+  createdAt: string;
   health: WorkloadHealth;
+  istioReferences: ObjectReference[];
+  istioSidecar: boolean;
+  labels: { [key: string]: string };
+  name: string;
+  notCoveredAuthPolicy: boolean;
+  resourceVersion: string;
+  serviceAccountNames: string[];
+  type: string;
+  versionLabel: boolean;
 }
 
 export interface WorkloadListItem extends WorkloadOverview {

@@ -3,7 +3,7 @@ import { Button, Tabs, Tab, ButtonVariant } from '@patternfly/react-core';
 import MatchBuilder from './MatchBuilder';
 import Matches from './Matches';
 import { style } from 'typestyle';
-import { WorkloadOverview } from '../../../types/ServiceInfo';
+import { WorkloadOverview } from '../../../types';
 import TrafficShifting, { WorkloadWeight } from '../TrafficShifting';
 import FaultInjection, { FaultInjectionRoute } from '../FaultInjection';
 import { PFColors } from '../../Pf/PfColors';

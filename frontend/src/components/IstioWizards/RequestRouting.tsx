@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { WorkloadOverview } from '../../types/ServiceInfo';
+import { WorkloadOverview } from '../../types';
 import Rules, { MOVE_TYPE, Rule } from './RequestRouting/Rules';
 import RuleBuilder from './RequestRouting/RuleBuilder';
 import { ANYTHING, EXACT, HEADERS, PRESENCE, REGEX } from './RequestRouting/MatchBuilder';

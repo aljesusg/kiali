@@ -15,6 +15,7 @@ import { AdditionalItem } from './Workload';
 import { ResourcePermissions } from './Permissions';
 import { KIALI_WIZARD_LABEL } from '../components/IstioWizards/WizardActions';
 import { ServiceOverview } from './ServiceList';
+import { WorkloadOverview } from './Workload';
 
 export interface ServicePort {
   name: string;
@@ -38,27 +39,17 @@ interface EndpointAddress {
   tlsMode?: string;
 }
 
-export interface WorkloadOverview {
-  name: string;
-  type: string;
-  istioSidecar: boolean;
-  labels?: { [key: string]: string };
-  resourceVersion: string;
-  createdAt: string;
-  serviceAccountNames: string[];
-}
-
 export interface Service {
-  type: string;
-  name: string;
-  createdAt: string;
-  resourceVersion: string;
-  ip: string;
-  ports?: ServicePort[];
   annotations: { [key: string]: string };
+  createdAt: string;
   externalName: string;
   labels?: { [key: string]: string };
+  name: string;
+  ip: string;
+  ports?: ServicePort[];
+  resourceVersion: string;
   selectors?: { [key: string]: string };
+  type: string;
 }
 
 export interface ServiceDetailsInfo {
