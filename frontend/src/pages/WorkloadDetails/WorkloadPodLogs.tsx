@@ -42,7 +42,7 @@ import { PFColors, PFColorVal } from 'components/Pf/PfColors';
 import AccessLogModal from 'components/Envoy/AccessLogModal';
 import { PFBadge, PFBadges } from 'components/Pf/PfBadges';
 import history, { URLParam } from 'app/History';
-import { TracingQuery, Span } from 'types/Tracing';
+import { TracingQuery, TraceSpan } from 'types/Tracing';
 import { AxiosResponse } from 'axios';
 import moment from 'moment';
 import { formatDuration } from 'utils/tracing/TracingHelper';
@@ -80,7 +80,7 @@ type ContainerOption = {
 
 type Entry = {
   logEntry?: LogEntry;
-  span?: Span;
+  span?: TraceSpan;
   timestamp: string;
   timestampUnix: TimeInSeconds;
 };
@@ -744,7 +744,7 @@ export class WorkloadPodLogs extends React.Component<WorkloadPodLogsProps, Workl
     this.setState({ kebabOpen: kebabOpen });
   };
 
-  private gotoSpan = (span: Span) => {
+  private gotoSpan = (span: TraceSpan) => {
     const link =
       `/namespaces/${this.props.namespace}/workloads/${this.props.workload}` +
       `?tab=traces&${URLParam.JAEGER_TRACE_ID}=${span.traceID}&${URLParam.JAEGER_SPAN_ID}=${span.spanID}`;
@@ -953,7 +953,7 @@ export class WorkloadPodLogs extends React.Component<WorkloadPodLogsProps, Workl
     }
 
     const selectedContainers = containerOptions.filter(c => c.isSelected);
-    const promises: Promise<AxiosResponse<PodLogs | Span[]>>[] = selectedContainers.map(c => {
+    const promises: Promise<AxiosResponse<PodLogs | TraceSpan[]>>[] = selectedContainers.map(c => {
       return getPodLogs(namespace, podName, c.name, maxLines, sinceTime, duration, c.isProxy);
     });
     if (showSpans) {
@@ -970,7 +970,7 @@ export class WorkloadPodLogs extends React.Component<WorkloadPodLogsProps, Workl
       .then(responses => {
         let entries = [] as Entry[];
         if (showSpans) {
-          const spans = showSpans ? (responses[0].data as Span[]) : ([] as Span[]);
+          const spans = showSpans ? (responses[0].data as TraceSpan[]) : ([] as TraceSpan[]);
           entries = spans.map(span => {
             let startTimeU = Math.floor(span.startTime / 1000);
             return {

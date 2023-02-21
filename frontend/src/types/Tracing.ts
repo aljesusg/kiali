@@ -6,7 +6,7 @@ export type TracingQuery = {
   minDuration?: number;
 };
 
-export type Span = {
+export type TraceSpan = {
   traceID: string;
   spanID: string;
   operationName: string;

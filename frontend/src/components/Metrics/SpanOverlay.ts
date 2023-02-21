@@ -2,7 +2,7 @@ import { PFColors } from 'components/Pf/PfColors';
 import * as API from 'services/Api';
 import { TimeRange, durationToBounds, guardTimeRange } from 'types/Common';
 import * as AlertUtils from 'utils/AlertUtils';
-import { Span, TracingQuery } from 'types/Tracing';
+import { TraceSpan, TracingQuery } from 'types';
 import { MetricsObjectTypes } from 'types/Metrics';
 import { LineInfo } from 'types/VictoryChartInfo';
 import { Overlay, OverlayInfo } from 'types/Overlay';
@@ -19,7 +19,7 @@ type FetchOptions = {
 };
 
 export class SpanOverlay {
-  private spans: Span[] = [];
+  private spans: TraceSpan[] = [];
   private lastFetchError = false;
 
   constructor(public onChange: (overlay?: Overlay<JaegerLineInfo>) => void) {}
@@ -28,7 +28,7 @@ export class SpanOverlay {
     this.spans = [];
   }
 
-  setSpans(spans: Span[]) {
+  setSpans(spans: TraceSpan[]) {
     this.spans = spans;
   }
 

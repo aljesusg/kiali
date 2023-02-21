@@ -1,5 +1,5 @@
 import Namespace from './Namespace';
-import { Runtime } from './Workload';
+import { Runtime } from './Runtimes';
 import { AppHealthResponse } from '../types/Health';
 
 export interface AppId {

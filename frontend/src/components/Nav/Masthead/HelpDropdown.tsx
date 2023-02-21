@@ -6,12 +6,12 @@ import { Dropdown, DropdownToggle, DropdownItem } from '@patternfly/react-core';
 import { QuestionCircleIcon } from '@patternfly/react-icons/';
 import { connect } from 'react-redux';
 import { isUpstream } from '../../UpstreamDetector/UpstreamDetector';
-import { Status, ExternalServiceInfo, StatusKey } from '../../../types/StatusState';
+import { StatusStateT, ExternalServiceInfo, StatusKey } from '../../../types';
 import { config, serverConfig } from '../../../config';
 import IstioCertsInfoConnected from 'components/IstioCertsInfo/IstioCertsInfo';
 
 type HelpDropdownProps = {
-  status: Status;
+  status: StatusStateT;
   externalServices: ExternalServiceInfo[];
   warningMessages: string[];
 };

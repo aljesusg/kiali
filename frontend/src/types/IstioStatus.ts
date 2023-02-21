@@ -1,4 +1,4 @@
-export enum Status {
+export enum IstioStatusType {
   Healthy = 'Healthy',
   Unhealthy = 'Unhealthy',
   Unreachable = 'Unreachable',
@@ -8,7 +8,7 @@ export enum Status {
 
 export interface ComponentStatus {
   name: string;
-  status: Status;
+  status: IstioStatusType;
   is_core: boolean;
 }
 

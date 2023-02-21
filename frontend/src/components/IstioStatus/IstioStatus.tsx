@@ -3,7 +3,7 @@ import { SVGIconProps } from '@patternfly/react-icons/dist/esm/createIcon';
 import * as API from '../../services/Api';
 import * as AlertUtils from '../../utils/AlertUtils';
 import { TimeInMilliseconds } from '../../types/Common';
-import { ComponentStatus, Status } from '../../types/IstioStatus';
+import { ComponentStatus, IstioStatusType } from '../../types';
 import { MessageType } from '../../types/MessageCenter';
 import Namespace from '../../types/Namespace';
 import { KialiAppState } from '../../store/Store';
@@ -96,8 +96,8 @@ export class IstioStatus extends React.Component<Props> {
 
     Object.keys(this.props.status || {}).forEach((compKey: string) => {
       const { status, is_core } = this.props.status[compKey];
-      const isNotReady: boolean = status === Status.NotReady;
-      const isUnhealthy: boolean = status !== Status.Healthy && !isNotReady;
+      const isNotReady: boolean = status === IstioStatusType.NotReady;
+      const isUnhealthy: boolean = status !== IstioStatusType.Healthy && !isNotReady;
 
       if (is_core) {
         coreUnhealthy = coreUnhealthy || isUnhealthy;
@@ -113,7 +113,7 @@ export class IstioStatus extends React.Component<Props> {
 
   healthyComponents = () => {
     return this.props.status.reduce((healthy: boolean, compStatus: ComponentStatus) => {
-      return healthy && compStatus.status === Status.Healthy;
+      return healthy && compStatus.status === IstioStatusType.Healthy;
     }, true);
   };
 

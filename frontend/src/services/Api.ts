@@ -39,7 +39,7 @@ import { KialiCrippledFeatures, ServerConfig } from '../types/ServerConfig';
 import { StatusState } from '../types/StatusState';
 import { ServiceDetailsInfo } from '../types/ServiceInfo';
 import { ServiceList } from '../types/ServiceList';
-import { Span, TracingQuery } from 'types/Tracing';
+import { TraceSpan, TracingQuery } from 'types/Tracing';
 import { TLSStatus } from '../types/TLSStatus';
 import { Workload, WorkloadNamespaceResponse } from '../types/Workload';
 import { CertsInfo } from 'types/CertsInfo';
@@ -510,9 +510,9 @@ export const updateWorkload = (
   patchType?: string
 ): Promise<Response<string>> => {
   const params: any = {};
-  params.type = type
+  params.type = type;
   if (patchType) {
-    params.patchType = patchType
+    params.patchType = patchType;
   }
   return newRequest(HTTP_VERBS.PATCH, urls.workload(namespace, name), params, jsonPatch);
 };
@@ -525,7 +525,7 @@ export const updateService = (
 ): Promise<Response<string>> => {
   const params: any = {};
   if (patchType) {
-    params.patchType = patchType
+    params.patchType = patchType;
   }
   return newRequest(HTTP_VERBS.PATCH, urls.service(namespace, name), params, jsonPatch);
 };
@@ -607,15 +607,15 @@ export const getErrorDetail = (error: AxiosError): string => {
 };
 
 export const getAppSpans = (namespace: string, app: string, params: TracingQuery) => {
-  return newRequest<Span[]>(HTTP_VERBS.GET, urls.appSpans(namespace, app), params, {});
+  return newRequest<TraceSpan[]>(HTTP_VERBS.GET, urls.appSpans(namespace, app), params, {});
 };
 
 export const getServiceSpans = (namespace: string, service: string, params: TracingQuery) => {
-  return newRequest<Span[]>(HTTP_VERBS.GET, urls.serviceSpans(namespace, service), params, {});
+  return newRequest<TraceSpan[]>(HTTP_VERBS.GET, urls.serviceSpans(namespace, service), params, {});
 };
 
 export const getWorkloadSpans = (namespace: string, workload: string, params: TracingQuery) => {
-  return newRequest<Span[]>(HTTP_VERBS.GET, urls.workloadSpans(namespace, workload), params, {});
+  return newRequest<TraceSpan[]>(HTTP_VERBS.GET, urls.workloadSpans(namespace, workload), params, {});
 };
 
 export const getIstioPermissions = (namespaces: string[]) => {

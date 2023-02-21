@@ -1,6 +1,7 @@
 import Namespace from './Namespace';
 import { WorkloadHealth, WorkloadHealthResponse } from './Health';
 import { ObjectReference, Pod, Service, Validations } from './IstioObjects';
+import { Runtime } from './Runtimes';
 
 export interface WorkloadId {
   namespace: string;
@@ -21,7 +22,7 @@ export interface Workload {
   availableReplicas: Number;
   pods: Pod[];
   annotations: { [key: string]: string };
-  health?: WorkloadHealthResponse;  
+  health?: WorkloadHealthResponse;
   services: Service[];
   runtimes: Runtime[];
   additionalDetails: AdditionalItem[];
@@ -79,16 +80,6 @@ export interface WorkloadNamespaceResponse {
   namespace: Namespace;
   workloads: WorkloadOverview[];
   validations: Validations;
-}
-
-export interface Runtime {
-  name: string;
-  dashboardRefs: DashboardRef[];
-}
-
-export interface DashboardRef {
-  template: string;
-  title: string;
 }
 
 export interface AdditionalItem {

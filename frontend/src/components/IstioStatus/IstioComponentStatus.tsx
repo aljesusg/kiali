@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ComponentStatus, Status } from '../../types/IstioStatus';
+import { ComponentStatus, IstioStatusType } from '../../types';
 import { SVGIconProps } from '@patternfly/react-icons/dist/js/createIcon';
 import { PFColors } from '../Pf/PfColors';
 import {
@@ -48,16 +48,16 @@ const validToIcon: { [valid: string]: ComponentIcon } = {
 };
 
 const statusMsg = {
-  [Status.NotFound]: 'Not found',
-  [Status.NotReady]: 'Not ready',
-  [Status.Unhealthy]: 'Not healthy',
-  [Status.Unreachable]: 'Unreachable'
+  [IstioStatusType.NotFound]: 'Not found',
+  [IstioStatusType.NotReady]: 'Not ready',
+  [IstioStatusType.Unhealthy]: 'Not healthy',
+  [IstioStatusType.Unreachable]: 'Unreachable'
 };
 
 class IstioComponentStatus extends React.Component<Props> {
-  renderIcon = (status: Status, isCore: boolean) => {
-    let compIcon = validToIcon[`${status === Status.Healthy}-${isCore}`];
-    if (status === Status.NotReady) {
+  renderIcon = (status: IstioStatusType, isCore: boolean) => {
+    let compIcon = validToIcon[`${status === IstioStatusType.Healthy}-${isCore}`];
+    if (status === IstioStatusType.NotReady) {
       compIcon = NotReadyComponent;
     }
     const IconComponent = compIcon.icon;

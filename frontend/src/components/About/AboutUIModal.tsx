@@ -10,7 +10,7 @@ import {
   ButtonVariant,
   Alert
 } from '@patternfly/react-core';
-import { ExternalServiceInfo, Status, StatusKey } from '../../types/StatusState';
+import { ExternalServiceInfo, StatusStateT, StatusKey } from '../../types';
 import { config, kialiLogo } from '../../config';
 import { style } from 'typestyle';
 import { KialiIcon } from 'config/KialiIcon';
@@ -20,7 +20,7 @@ type AboutUIModalState = {
 };
 
 type AboutUIModalProps = {
-  status: Status;
+  status: StatusStateT;
   externalServices: ExternalServiceInfo[];
   warningMessages: string[];
 };
