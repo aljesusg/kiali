@@ -25,6 +25,7 @@ import { UserSettingsThunkActions } from '../../actions/UserSettingsThunkActions
 import { Menu } from './Menu';
 import { Link, useLocation } from 'react-router-dom-v5-compat';
 import { ExternalServiceInfo } from '../../types/StatusState';
+import { Chatbot } from 'components/ChatBot/Chatbot';
 
 type ReduxStateProps = {
   externalServices: ExternalServiceInfo[];
@@ -128,6 +129,7 @@ export const NavigationComponent: React.FC<NavigationProps> = (props: Navigation
       <PageSection className={flexBoxColumnStyle} variant="light">
         <RenderPage isGraph={isGraph()} />
       </PageSection>
+      <Chatbot/>
     </Page>
   );
 };
