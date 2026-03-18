@@ -17,7 +17,7 @@ import (
 	"github.com/kiali/kiali/ai/mcp/get_action_ui"
 	"github.com/kiali/kiali/ai/mcp/get_citations"
 	"github.com/kiali/kiali/ai/mcp/get_logs"
-	"github.com/kiali/kiali/ai/mcp/get_mesh_graph"
+	"github.com/kiali/kiali/ai/mcp/get_mesh_traffic_graph"
 	"github.com/kiali/kiali/ai/mcp/get_metrics"
 	"github.com/kiali/kiali/ai/mcp/get_pod_performance"
 	"github.com/kiali/kiali/ai/mcp/get_resource_detail"
@@ -146,8 +146,8 @@ func (t ToolDef) GetDefinition() map[string]interface{} {
 
 func (t ToolDef) Call(r *http.Request, args map[string]interface{}, business *business.Layer, prom prometheus.ClientInterface, clientFactory kubernetes.ClientFactory, kialiCache cache.KialiCache, conf *config.Config, grafana *grafana.Service, perses *perses.Service, discovery *istio.Discovery) (interface{}, int) {
 	switch t.Name {
-	case "get_mesh_graph":
-		return get_mesh_graph.Execute(r, args, business, prom, clientFactory, kialiCache, conf, grafana, perses, discovery)
+	case "get_mesh_traffic_graph":
+		return get_mesh_traffic_graph.Execute(r, args, business, prom, clientFactory, kialiCache, conf, grafana, perses, discovery)
 	case "get_resource_detail":
 		return get_resource_detail.Execute(r, args, business, prom, clientFactory, kialiCache, conf, grafana, perses, discovery)
 	case "get_traces":

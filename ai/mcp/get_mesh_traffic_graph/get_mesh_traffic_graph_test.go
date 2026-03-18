@@ -1,4 +1,4 @@
-package get_mesh_graph
+package get_mesh_traffic_graph
 
 import (
 	"net/http"
@@ -151,7 +151,7 @@ func TestExecute_ValidSingleNamespace_ReturnsOKWithResponse(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
 	require.NotNil(t, resp.Namespaces)
 	assert.NotEmpty(t, resp.Namespaces)
@@ -190,7 +190,7 @@ func TestExecute_ValidNamespaceList_ReturnsOKWithResponse(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
 	require.NotNil(t, resp.Namespaces)
 	assert.NotEmpty(t, resp.Namespaces)
@@ -229,7 +229,7 @@ func TestExecute_ValidAndInvalidNamespaces_ReturnsOKWithSkippedWarning(t *testin
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
 	require.NotNil(t, resp.Namespaces)
 	assert.NotEmpty(t, resp.Namespaces)
@@ -310,9 +310,9 @@ func TestExecute_WorkloadGraphType_FetchesWorkloadHealth(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
-	assert.NotNil(t, resp.MeshHealthSummary)
+	assert.NotNil(t, resp.Health)
 }
 
 func TestExecute_ServiceGraphType_FetchesServiceHealth(t *testing.T) {
@@ -350,9 +350,9 @@ func TestExecute_ServiceGraphType_FetchesServiceHealth(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
-	assert.NotNil(t, resp.MeshHealthSummary)
+	assert.NotNil(t, resp.Health)
 }
 
 func TestExecute_DuplicateNamespaces_Deduplicates(t *testing.T) {
@@ -388,9 +388,9 @@ func TestExecute_DuplicateNamespaces_Deduplicates(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
-	assert.NotNil(t, resp.Graph)
+	assert.NotNil(t, resp.Nodes)
 	// Should only process each namespace once
 }
 
@@ -427,9 +427,9 @@ func TestExecute_NamespacesWithWhitespace_TrimsCorrectly(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
-	assert.NotNil(t, resp.Graph)
+	assert.NotNil(t, resp.Nodes)
 	// Should correctly trim and process both namespaces
 }
 
@@ -465,9 +465,9 @@ func TestExecute_CustomRateInterval_UsesProvidedValue(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
-	assert.NotNil(t, resp.Graph)
+	assert.NotNil(t, resp.Nodes)
 }
 
 func TestExecute_DefaultRateInterval_UsesDefault(t *testing.T) {
@@ -502,7 +502,7 @@ func TestExecute_DefaultRateInterval_UsesDefault(t *testing.T) {
 
 	res, code := Execute(req, args, businessLayer, promClient, clientFactory, kialiCache, conf, nil, nil, discovery)
 	require.Equal(t, http.StatusOK, code)
-	resp, ok := res.(GetMeshGraphResponse)
+	resp, ok := res.(CompactGraphResponse)
 	require.True(t, ok)
-	assert.NotNil(t, resp.Graph)
+	assert.NotNil(t, resp.Nodes)
 }

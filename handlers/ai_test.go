@@ -94,7 +94,7 @@ func TestChatMCP_InvalidJSON(t *testing.T) {
 
 	// Test with invalid JSON
 	body := bytes.NewBufferString(`{invalid json}`)
-	resp, err := http.Post(ts.URL+"/api/chat/mcp/get_mesh_graph", "application/json", body)
+	resp, err := http.Post(ts.URL+"/api/chat/mcp/get_mesh_traffic_graph", "application/json", body)
 	require.NoError(err)
 	t.Cleanup(func() { resp.Body.Close() })
 

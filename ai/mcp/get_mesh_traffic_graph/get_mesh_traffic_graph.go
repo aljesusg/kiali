@@ -1,4 +1,4 @@
-package get_mesh_graph
+package get_mesh_traffic_graph
 
 import (
 	"encoding/json"
@@ -196,7 +196,8 @@ func Execute(r *http.Request, args map[string]interface{}, business *business.La
 
 	wg.Wait()
 
-	return resp, http.StatusOK
+	compactResp := TransformGraph(resp.Graph, toolArgs.GraphType, toolArgs.Namespaces, resp.MeshHealthSummary, resp.Errors)
+	return compactResp, http.StatusOK
 }
 
 func getHealth(r *http.Request, conf *config.Config, businessLayer *business.Layer, prom prometheus.ClientInterface,

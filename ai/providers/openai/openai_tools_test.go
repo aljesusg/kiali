@@ -174,7 +174,7 @@ func TestConvertToolToOpenAI_FromToolDefinition_GetLogs(t *testing.T) {
 }
 
 func TestConvertToolToOpenAI_FromToolDefinition_GetMeshGraph(t *testing.T) {
-	tool, err := mcp.LoadToolDefinition(filepath.Join("..", "..", "mcp", "tools", "get_mesh_graph.yaml"))
+	tool, err := mcp.LoadToolDefinition(filepath.Join("..", "..", "mcp", "tools", "get_mesh_traffic_graph.yaml"))
 	require.NoError(t, err)
 
 	converted := convertToolToOpenAI(tool)
@@ -182,8 +182,8 @@ func TestConvertToolToOpenAI_FromToolDefinition_GetMeshGraph(t *testing.T) {
 	expected := openai.ChatCompletionToolUnionParam{
 		OfFunction: &openai.ChatCompletionFunctionToolParam{
 			Function: openai.FunctionDefinitionParam{
-				Name:        "get_mesh_graph",
-				Description: openai.String("Returns the mesh graph data for the given namespaces and graph type."),
+				Name:        "get_mesh_traffic_graph",
+				Description: openai.String("Returns service-to-service traffic topology, dependencies, and network metrics (throughput, response time, mTLS) for the specified namespaces. Use this to diagnose routing issues, latency, or find upstream/downstream dependencies."),
 				Parameters: openai.FunctionParameters{
 					"type": "object",
 					"required": []interface{}{
@@ -192,21 +192,17 @@ func TestConvertToolToOpenAI_FromToolDefinition_GetMeshGraph(t *testing.T) {
 					"properties": map[string]interface{}{
 						"namespaces": map[string]interface{}{
 							"type":        "string",
-							"description": "Comma-separated list of namespaces to include in the graph",
+							"description": "Comma-separated list of namespaces to map",
 						},
 						"graphType": map[string]interface{}{
 							"type":        "string",
-							"description": "Type of graph to return. Possible values: versionedApp, app, service, workload. Default is versionedApp.",
+							"description": "Granularity of the graph. 'app' aggregates by app name, 'versionedApp' separates by versions, 'workload' maps specific pods/deployments. Default: versionedApp.",
 							"enum": []interface{}{
 								"versionedApp",
 								"app",
 								"service",
 								"workload",
 							},
-						},
-						"rateInterval": map[string]interface{}{
-							"type":        "string",
-							"description": "Optional rate interval for fetching (e.g., '10m', '5m', '1h'). Default is '10m'.",
 						},
 						"clusterName": map[string]interface{}{
 							"type":        "string",

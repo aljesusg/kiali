@@ -134,7 +134,7 @@ func TestConvertToolToGoogle_FromToolDefinition_GetLogs(t *testing.T) {
 }
 
 func TestConvertToolToGoogle_FromToolDefinition_GetMeshGraph(t *testing.T) {
-	tool, err := mcp.LoadToolDefinition(filepath.Join("..", "..", "mcp", "tools", "get_mesh_graph.yaml"))
+	tool, err := mcp.LoadToolDefinition(filepath.Join("..", "..", "mcp", "tools", "get_mesh_traffic_graph.yaml"))
 	require.NoError(t, err)
 
 	converted := mapToGenAISchema(tool.GetDefinition())
@@ -144,16 +144,12 @@ func TestConvertToolToGoogle_FromToolDefinition_GetMeshGraph(t *testing.T) {
 		Properties: map[string]*genai.Schema{
 			"namespaces": {
 				Type:        genai.TypeString,
-				Description: "Comma-separated list of namespaces to include in the graph",
+				Description: "Comma-separated list of namespaces to map",
 			},
 			"graphType": {
 				Type:        genai.TypeString,
-				Description: "Type of graph to return. Possible values: versionedApp, app, service, workload. Default is versionedApp.",
+				Description: "Granularity of the graph. 'app' aggregates by app name, 'versionedApp' separates by versions, 'workload' maps specific pods/deployments. Default: versionedApp.",
 				Enum:        []string{"versionedApp", "app", "service", "workload"},
-			},
-			"rateInterval": {
-				Type:        genai.TypeString,
-				Description: "Optional rate interval for fetching (e.g., '10m', '5m', '1h'). Default is '10m'.",
 			},
 			"clusterName": {
 				Type:        genai.TypeString,

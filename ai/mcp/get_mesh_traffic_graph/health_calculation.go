@@ -1,4 +1,4 @@
-package get_mesh_graph
+package get_mesh_traffic_graph
 
 import (
 	"fmt"
