@@ -137,8 +137,8 @@ func TestIstioList_FilterByService(t *testing.T) {
 	businessLayer := business.NewLayerBuilder(t, conf).WithClient(k8s).Build()
 
 	args := map[string]interface{}{
-		"namespace":    "bookinfo",
-		"service_name": "reviews",
+		"namespace":   "bookinfo",
+		"serviceName": "reviews",
 	}
 
 	res, status := IstioList(context.Background(), args, businessLayer, conf)

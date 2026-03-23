@@ -156,14 +156,17 @@ Then configure `chat_ai` to reference the secret. The Kiali Operator and Helm ch
 
 The AI uses MCP tools to interact with Kiali and the mesh:
 
-- `get_action_ui`: Builds UI navigation actions.
-- `get_citations`: Finds relevant documentation links.
-- `get_mesh_graph`: Returns mesh health and topology summaries.
+- `get_action_ui`: Builds UI navigation actions (graphs, lists, details).
+- `get_citations`: Finds relevant Istio/Kiali documentation links.
+- `get_logs`: Retrieves Pod/workload logs with severity filtering.
+- `get_mesh_status`: Returns high-level mesh health, control plane, observability stack, and connectivity status.
+- `get_mesh_traffic_graph`: Returns compact service-to-service traffic topology with metrics (throughput, response time, mTLS).
+- `get_metrics`: Returns Istio/Envoy metrics for services, workloads, or apps.
 - `get_pod_performance`: Returns current Pod CPU/memory usage vs requests/limits.
-- `get_resource_detail`: Fetches service/workload details or lists.
-- `get_traces`: Fetches and summarizes distributed traces.
+- `get_traces`: Fetches and summarizes distributed traces (bottlenecks, errors).
+- `list_or_get_resources`: Lists or gets details for services, workloads, apps, and namespaces (compact/LLM-optimized output).
 - `manage_istio_config_read`: List/get Istio config (read-only).
-- `manage_istio_config`: Create/patch/delete Istio config.
+- `manage_istio_config`: Create/patch/delete Istio config with confirmation flow.
 
 For detailed tool documentation, see `ai/mcp/README.md`.
 

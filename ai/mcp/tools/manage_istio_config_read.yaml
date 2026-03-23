@@ -9,7 +9,7 @@
         type: "string"
         description: "Action to perform (read-only)"
         enum: ["list", "get"]
-      cluster:
+      clusterName:
         type: "string"
         description: "Cluster containing the Istio object, if not provided, will use the cluster name in the Kiali configuration (KubeConfig)"
       namespace:
@@ -27,6 +27,6 @@
       object:
         type: "string"
         description: "Name of the Istio object. Required for 'get' action."
-      service_name:
+      serviceName:
         type: "string"
         description: "Filter Istio configurations (VirtualServices, DestinationRules, and their referenced Gateways) that affect a specific service. Only applicable for 'list' action."

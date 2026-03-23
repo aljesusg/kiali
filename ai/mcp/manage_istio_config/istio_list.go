@@ -12,6 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
+	"github.com/kiali/kiali/ai/mcputil"
 	"github.com/kiali/kiali/business"
 	"github.com/kiali/kiali/config"
 	"github.com/kiali/kiali/kubernetes"
@@ -62,11 +63,11 @@ type ValidationCheckSummary struct {
 
 func IstioList(ctx context.Context, args map[string]interface{}, businessLayer *business.Layer, conf *config.Config) (interface{}, int) {
 	// Extract parameters
-	cluster, _ := args["cluster"].(string)
-	namespace, _ := args["namespace"].(string)
-	group, _ := args["group"].(string)
-	kind, _ := args["kind"].(string)
-	serviceName, _ := args["service_name"].(string)
+	cluster := mcputil.GetStringArg(args, "clusterName")
+	namespace := mcputil.GetStringArg(args, "namespace")
+	group := mcputil.GetStringArg(args, "group")
+	kind := mcputil.GetStringArg(args, "kind")
+	serviceName := mcputil.GetStringArg(args, "serviceName")
 
 	var istioConfig *models.IstioConfigList
 	var err error

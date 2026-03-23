@@ -23,14 +23,14 @@ import (
 
 // ExecuteReadOnly runs read-only actions (list, get) for Istio config. Use this for the manage_istio_config_read tool.
 func ExecuteReadOnly(kialiInterface *mcputil.KialiInterface, args map[string]interface{}) (interface{}, int) {
-	action, _ := args["action"].(string)
+	action := mcputil.GetStringArg(args, "action")
 	if err := validateReadOnlyIstioConfigInput(args); err != nil {
 		return err.Error(), http.StatusBadRequest
 	}
 	if action != "list" {
-		group, _ := args["group"].(string)
-		version, _ := args["version"].(string)
-		kind, _ := args["kind"].(string)
+		group := mcputil.GetStringArg(args, "group")
+		version := mcputil.GetStringArg(args, "version")
+		kind := mcputil.GetStringArg(args, "kind")
 		gvk := schema.GroupVersionKind{Group: group, Version: version, Kind: kind}
 		if !business.GetIstioAPI(gvk) {
 			if group == "gateway.networking.k8s.io" && kind == "Gateway" && version == "v1beta1" {
@@ -50,8 +50,8 @@ func ExecuteReadOnly(kialiInterface *mcputil.KialiInterface, args map[string]int
 }
 
 func Execute(kialiInterface *mcputil.KialiInterface, args map[string]interface{}) (interface{}, int) {
-	action, _ := args["action"].(string)
-	confirmed, _ := args["confirmed"].(bool)
+	action := mcputil.GetStringArg(args, "action")
+	confirmed := mcputil.AsBool(args["confirmed"])
 	if action == "list" || action == "get" {
 		return fmt.Errorf("for list and get actions use the manage_istio_config_read tool"), http.StatusBadRequest
 	}
@@ -60,9 +60,9 @@ func Execute(kialiInterface *mcputil.KialiInterface, args map[string]interface{}
 	}
 
 	if action != "list" {
-		group, _ := args["group"].(string)
-		version, _ := args["version"].(string)
-		kind, _ := args["kind"].(string)
+		group := mcputil.GetStringArg(args, "group")
+		version := mcputil.GetStringArg(args, "version")
+		kind := mcputil.GetStringArg(args, "kind")
 		gvk := schema.GroupVersionKind{Group: group, Version: version, Kind: kind}
 		if !business.GetIstioAPI(gvk) {
 			if group == "gateway.networking.k8s.io" && kind == "Gateway" && version == "v1beta1" {
@@ -161,7 +161,7 @@ func createFileAction(ctx context.Context, args map[string]interface{}, business
 	if operation != "create" && operation != "patch" && operation != "delete" {
 		operation = ""
 	}
-	cluster := mcputil.GetStringArg(args, "cluster")
+	cluster := mcputil.GetStringArg(args, "clusterName")
 	object := mcputil.GetStringArg(args, "object")
 	kind := mcputil.GetStringArg(args, "kind")
 	group := mcputil.GetStringArg(args, "group")
@@ -229,13 +229,13 @@ func createFileAction(ctx context.Context, args map[string]interface{}, business
 }
 
 func renderMergedPatchPreviewYAML(ctx context.Context, args map[string]interface{}, businessLayer *business.Layer, conf *config.Config) (string, error) {
-	cluster, _ := args["cluster"].(string)
-	namespace, _ := args["namespace"].(string)
-	group, _ := args["group"].(string)
-	version, _ := args["version"].(string)
-	kind, _ := args["kind"].(string)
-	object, _ := args["object"].(string)
-	data, _ := args["data"].(string)
+	cluster := mcputil.GetStringArg(args, "clusterName")
+	namespace := mcputil.GetStringArg(args, "namespace")
+	group := mcputil.GetStringArg(args, "group")
+	version := mcputil.GetStringArg(args, "version")
+	kind := mcputil.GetStringArg(args, "kind")
+	object := mcputil.GetStringArg(args, "object")
+	data := mcputil.GetStringArg(args, "data")
 
 	if cluster == "" {
 		cluster = conf.KubernetesConfig.ClusterName
@@ -295,12 +295,12 @@ func renderMergedPatchPreviewYAML(ctx context.Context, args map[string]interface
 // Strategy: Try to load existing object first. If exists, merge LLM changes onto it.
 // Otherwise, use template with required defaults.
 func ensureCompleteCreateYAML(args map[string]interface{}, data string, ctx context.Context, businessLayer *business.Layer, conf *config.Config) (string, error) {
-	cluster, _ := args["cluster"].(string)
-	namespace, _ := args["namespace"].(string)
-	group, _ := args["group"].(string)
-	version, _ := args["version"].(string)
-	kind, _ := args["kind"].(string)
-	object, _ := args["object"].(string)
+	cluster := mcputil.GetStringArg(args, "clusterName")
+	namespace := mcputil.GetStringArg(args, "namespace")
+	group := mcputil.GetStringArg(args, "group")
+	version := mcputil.GetStringArg(args, "version")
+	kind := mcputil.GetStringArg(args, "kind")
+	object := mcputil.GetStringArg(args, "object")
 
 	if cluster == "" {
 		cluster = conf.KubernetesConfig.ClusterName
@@ -450,12 +450,12 @@ func buildResourceTemplate(gvk schema.GroupVersionKind, name, namespace string) 
 
 // validateReadOnlyIstioConfigInput validates args for read-only actions (list, get).
 func validateReadOnlyIstioConfigInput(args map[string]interface{}) error {
-	action, _ := args["action"].(string)
-	namespace, _ := args["namespace"].(string)
-	group, _ := args["group"].(string)
-	version, _ := args["version"].(string)
-	kind, _ := args["kind"].(string)
-	object, _ := args["object"].(string)
+	action := mcputil.GetStringArg(args, "action")
+	namespace := mcputil.GetStringArg(args, "namespace")
+	group := mcputil.GetStringArg(args, "group")
+	version := mcputil.GetStringArg(args, "version")
+	kind := mcputil.GetStringArg(args, "kind")
+	object := mcputil.GetStringArg(args, "object")
 	switch action {
 	case "list":
 		return nil

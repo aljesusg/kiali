@@ -376,41 +376,41 @@ func TestConvertToolToGoogle_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 				Type:        genai.TypeBoolean,
 				Description: "CRITICAL: If 'true', the destructive action (create/patch/delete) is executed. If 'false' (or omitted) for create/patch, the tool returns a YAML PREVIEW. Display it to the user and ask for confirmation before calling again with confirmed=true.",
 			},
-			"cluster": {
+			"clusterName": {
 				Type:        genai.TypeString,
 				Description: "Cluster containing the Istio object, if not provided, will use the cluster name in the Kiali configuration (KubeConfig)",
 			},
 			"namespace": {
 				Type:        genai.TypeString,
-				Description: "Namespace containing the Istio object. Required.",
+				Description: "Namespace containing the Istio object.",
 			},
 			"group": {
 				Type:        genai.TypeString,
-				Description: "API group of the Istio object (e.g., 'networking.istio.io', 'gateway.networking.k8s.io'). Required.",
+				Description: "API group of the Istio object (e.g., 'networking.istio.io', 'gateway.networking.k8s.io').",
 			},
 			"version": {
 				Type:        genai.TypeString,
-				Description: "API version. Use 'v1' for VirtualService, DestinationRule, and Gateway. Required.",
+				Description: "API version. Use 'v1' for VirtualService, DestinationRule, and Gateway.",
 			},
 			"kind": {
 				Type:        genai.TypeString,
-				Description: "Kind of the Istio object (e.g., 'VirtualService', 'DestinationRule'). Required.",
+				Description: "Kind of the Istio object (e.g., 'VirtualService', 'DestinationRule').",
 			},
-			"object": {
+			"name": {
 				Type:        genai.TypeString,
-				Description: "Name of the Istio object. Required for create, patch, and delete.",
+				Description: "Name of the Istio object.",
 			},
 			"data": {
 				Type:        genai.TypeString,
 				Description: "Complete JSON or YAML data to apply or create the object. Required for create and patch actions. You MUST provide a COMPLETE and VALID manifest with ALL required fields for the resource type. Arrays (like servers, http, etc.) are REPLACED entirely, so you must include ALL required fields within each array element.",
 			},
-			"data_format": {
+			"dataFormat": {
 				Type:        genai.TypeString,
 				Description: "Optional hint for the payload format. Usually leave as 'auto'.",
 				Enum:        []string{"auto", "json", "yaml"},
 			},
 		},
-		Required: []string{"action", "confirmed"},
+		Required: []string{"action", "confirmed", "namespace", "group", "version", "kind", "name"},
 	}
 
 	assert.Equal(t, expected, converted)
@@ -430,7 +430,7 @@ func TestConvertToolToGoogle_FromToolDefinition_ManageIstioConfigRead(t *testing
 				Description: "Action to perform (read-only)",
 				Enum:        []string{"list", "get"},
 			},
-			"cluster": {
+			"clusterName": {
 				Type:        genai.TypeString,
 				Description: "Cluster containing the Istio object, if not provided, will use the cluster name in the Kiali configuration (KubeConfig)",
 			},
@@ -454,7 +454,7 @@ func TestConvertToolToGoogle_FromToolDefinition_ManageIstioConfigRead(t *testing
 				Type:        genai.TypeString,
 				Description: "Name of the Istio object. Required for 'get' action.",
 			},
-			"service_name": {
+			"serviceName": {
 				Type:        genai.TypeString,
 				Description: "Filter Istio configurations (VirtualServices, DestinationRules, and their referenced Gateways) that affect a specific service. Only applicable for 'list' action.",
 			},

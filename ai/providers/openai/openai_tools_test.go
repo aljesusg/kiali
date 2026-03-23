@@ -510,6 +510,12 @@ func TestConvertToolToOpenAI_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 					"required": []interface{}{
 						"action",
 						"confirmed",
+						"namespace",
+						"group",
+						"version",
+						"kind",
+						"object",
+						"name",
 					},
 					"properties": map[string]interface{}{
 						"action": map[string]interface{}{
@@ -525,35 +531,35 @@ func TestConvertToolToOpenAI_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 							"type":        "boolean",
 							"description": "CRITICAL: If 'true', the destructive action (create/patch/delete) is executed. If 'false' (or omitted) for create/patch, the tool returns a YAML PREVIEW. Display it to the user and ask for confirmation before calling again with confirmed=true.",
 						},
-						"cluster": map[string]interface{}{
+						"clusterName": map[string]interface{}{
 							"type":        "string",
 							"description": "Cluster containing the Istio object, if not provided, will use the cluster name in the Kiali configuration (KubeConfig)",
 						},
 						"namespace": map[string]interface{}{
 							"type":        "string",
-							"description": "Namespace containing the Istio object. Required.",
+							"description": "Namespace containing the Istio object.",
 						},
 						"group": map[string]interface{}{
 							"type":        "string",
-							"description": "API group of the Istio object (e.g., 'networking.istio.io', 'gateway.networking.k8s.io'). Required.",
+							"description": "API group of the Istio object (e.g., 'networking.istio.io', 'gateway.networking.k8s.io').",
 						},
 						"version": map[string]interface{}{
 							"type":        "string",
-							"description": "API version. Use 'v1' for VirtualService, DestinationRule, and Gateway. Required.",
+							"description": "API version. Use 'v1' for VirtualService, DestinationRule, and Gateway.",
 						},
 						"kind": map[string]interface{}{
 							"type":        "string",
-							"description": "Kind of the Istio object (e.g., 'VirtualService', 'DestinationRule'). Required.",
+							"description": "Kind of the Istio object (e.g., 'VirtualService', 'DestinationRule').",
 						},
-						"object": map[string]interface{}{
+						"name": map[string]interface{}{
 							"type":        "string",
-							"description": "Name of the Istio object. Required for create, patch, and delete.",
+							"description": "Name of the Istio object.",
 						},
 						"data": map[string]interface{}{
 							"type":        "string",
 							"description": "Complete JSON or YAML data to apply or create the object. Required for create and patch actions. You MUST provide a COMPLETE and VALID manifest with ALL required fields for the resource type. Arrays (like servers, http, etc.) are REPLACED entirely, so you must include ALL required fields within each array element.",
 						},
-						"data_format": map[string]interface{}{
+						"dataFormat": map[string]interface{}{
 							"type":        "string",
 							"description": "Optional hint for the payload format. Usually leave as 'auto'.",
 							"enum": []interface{}{
@@ -597,7 +603,7 @@ func TestConvertToolToOpenAI_FromToolDefinition_ManageIstioConfigRead(t *testing
 								"get",
 							},
 						},
-						"cluster": map[string]interface{}{
+						"clusterName": map[string]interface{}{
 							"type":        "string",
 							"description": "Cluster containing the Istio object, if not provided, will use the cluster name in the Kiali configuration (KubeConfig)",
 						},
@@ -621,7 +627,7 @@ func TestConvertToolToOpenAI_FromToolDefinition_ManageIstioConfigRead(t *testing
 							"type":        "string",
 							"description": "Name of the Istio object. Required for 'get' action.",
 						},
-						"service_name": map[string]interface{}{
+						"serviceName": map[string]interface{}{
 							"type":        "string",
 							"description": "Filter Istio configurations (VirtualServices, DestinationRules, and their referenced Gateways) that affect a specific service. Only applicable for 'list' action.",
 						},

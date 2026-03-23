@@ -5,10 +5,11 @@ This directory contains the Model Context Protocol (MCP) tools that enable the K
 ## Overview
 
 MCP tools are functions that the AI can call to:
-- Retrieve service mesh topology and traffic data
+- Retrieve service mesh topology, health, and traffic data
 - List and inspect Kubernetes resources (services, workloads, apps, namespaces)
 - Manage Istio configuration objects (create, patch, delete)
 - Get logs, metrics, traces, and pod performance data
+- Check mesh-wide status (control plane, observability stack, connectivity)
 - Generate navigation actions for the Kiali UI
 - Find relevant documentation citations
 
@@ -57,61 +58,7 @@ Surfaces relevant Istio/Kiali documentation links when the user asks conceptual 
 
 ---
 
-### 3. `get_mesh_traffic_graph`
-
-Returns a compact service-to-service traffic topology with network metrics (throughput, response time, mTLS) for the specified namespaces. The output is LLM-optimized — Cytoscape hash IDs are resolved to human-readable names and the mesh/namespace metadata is stripped.
-
-**Parameters**:
-- `namespaces` (string, required): Comma-separated list of namespaces to map.
-- `graphType` (string, optional): `"versionedApp"`, `"app"`, `"service"`, `"workload"`. Default: `"versionedApp"`.
-- `clusterName` (string, optional): Cluster name. Defaults to the Kiali configuration cluster.
-
-**Returns**: `CompactGraphResponse` with:
-- `graphType`, `namespaces`: Metadata
-- `nodes`: Array of `{name, type, version}` — only real nodes, no box/compound nodes
-- `traffic`: Array of `{source, target, protocol, throughput, responseTimeMs, mTLS, health}` — source/target are human-readable labels like `"productpage (v1)"`
-- `health`: Optional `MeshHealthSummary` with overall status and per-namespace breakdown
-
-**Example**:
-```json
-{"namespaces": "bookinfo", "graphType": "versionedApp"}
-```
-
----
-
-### 4. `list_or_get_resources`
-
-Unified tool to list or get details for services, workloads, apps, and namespaces. If `resourceName` is omitted, returns a compact list. If provided, returns detailed information for that specific resource.
-
-**Parameters**:
-- `resourceType` (string, required): `"service"`, `"workload"`, `"app"`, or `"namespace"`.
-- `namespaces` (string, optional): Comma-separated namespaces. If empty, queries all accessible namespaces.
-- `resourceName` (string, optional): If provided, returns detail view. If empty, returns list view.
-- `clusterName` (string, optional): Cluster name. Defaults to the Kiali configuration cluster.
-
-**Returns (list mode)**:
-- **Services/Workloads**: `map[cluster][]ResourceListItem` with `name`, `namespace`, `health`, `configuration`, `details`, `labels`, `type` (workloads only).
-- **Apps**: `AppListResponse` with `cluster` at root, `applications` array with `name`, `namespace`, `health`, `istio` status, `versions`, `istioReferences`.
-- **Namespaces**: `NamespaceListResponse` with `cluster` at root, `namespaces` array with `name`, `injection`, `health`, `counts`, `validations` (omitted when zero).
-
-**Returns (detail mode)**:
-- **Services**: `ServiceDetailResponse` with service info, istio config, workloads, endpoints, health status, inbound success rate.
-- **Workloads**: `WorkloadDetailResponse` with workload info, replica status, traffic success rates, istio mode/proxy version/sync status, pods, associated services.
-- **Apps**: `AppDetailResponse` with app name, services, istio context, workloads with versions.
-- **Namespaces**: `NamespaceDetailResponse` with istio context (injection, discovery, revision) and resource counts.
-
-**Examples**:
-```json
-{"resourceType": "service", "namespaces": "bookinfo"}
-{"resourceType": "workload", "namespaces": "bookinfo", "resourceName": "reviews-v1"}
-{"resourceType": "namespace"}
-{"resourceType": "namespace", "resourceName": "bookinfo"}
-{"resourceType": "app", "namespaces": "bookinfo", "resourceName": "productpage"}
-```
-
----
-
-### 5. `get_logs`
+### 3. `get_logs`
 
 Gets logs from a Kubernetes Pod or workload. If the pod name is not found, it resolves the workload name and picks a running pod.
 
@@ -129,6 +76,49 @@ Gets logs from a Kubernetes Pod or workload. If the pod name is not found, it re
 **Example**:
 ```json
 {"namespace": "bookinfo", "name": "reviews-v1", "tail": 100, "severity": "ERROR"}
+```
+
+---
+
+### 4. `get_mesh_status`
+
+Retrieves the high-level health and environment details of the Istio service mesh. Returns control plane status, data plane namespace health, observability stack health (Prometheus, Grafana, tracing), component connectivity, and critical alerts. Use this as the first diagnostic step for mesh-wide issues.
+
+**Parameters**: None required. The tool uses the current Kiali configuration to determine the cluster and mesh.
+
+**Returns**: Compact mesh status with:
+- `components.control_plane`: Istiod nodes with cluster, name, namespace, status, version
+- `components.data_plane`: Monitored namespaces with injection, ambient, and health status
+- `components.observability_stack`: Health of Grafana, Prometheus, tracing (Jaeger/Tempo)
+- `connectivity_graph`: Array of `{from, to, status}` connections between mesh components
+- `critical_alerts`: Array of `{component, message, impact}` for unhealthy components
+- `environment`: Istio version, Kiali version, trust domain, timestamp
+
+**Example**:
+```json
+{}
+```
+
+---
+
+### 5. `get_mesh_traffic_graph`
+
+Returns a compact service-to-service traffic topology with network metrics (throughput, response time, mTLS) for the specified namespaces. The output is LLM-optimized — Cytoscape hash IDs are resolved to human-readable names and the mesh/namespace metadata is stripped.
+
+**Parameters**:
+- `namespaces` (string, required): Comma-separated list of namespaces to map.
+- `graphType` (string, optional): `"versionedApp"`, `"app"`, `"service"`, `"workload"`. Default: `"versionedApp"`.
+- `clusterName` (string, optional): Cluster name. Defaults to the Kiali configuration cluster.
+
+**Returns**: `CompactGraphResponse` with:
+- `graphType`, `namespaces`: Metadata
+- `nodes`: Array of `{name, type, version}` — only real nodes, no box/compound nodes
+- `traffic`: Array of `{source, target, protocol, throughput, responseTimeMs, mTLS, health}` — source/target are human-readable labels like `"productpage (v1)"`
+- `health`: Optional `MeshHealthSummary` with overall status and per-namespace breakdown
+
+**Example**:
+```json
+{"namespaces": "bookinfo", "graphType": "versionedApp"}
 ```
 
 ---
@@ -181,7 +171,7 @@ Returns a human-readable summary of Pod CPU/memory usage (from Prometheus) compa
 Fetches distributed traces from Jaeger/Tempo and summarizes bottlenecks and error spans.
 
 **Parameters**:
-- `traceId` (string, optional): Specific trace ID. If provided, namespace/service_name are ignored.
+- `traceId` (string, optional): Specific trace ID. If provided, namespace/serviceName are ignored.
 - `namespace` (string, required if no traceId): Namespace of the service.
 - `serviceName` (string, required if no traceId): Service name.
 - `errorOnly` (boolean, optional): Only consider error traces. Default: false.
@@ -200,7 +190,39 @@ Fetches distributed traces from Jaeger/Tempo and summarizes bottlenecks and erro
 
 ---
 
-### 9. `manage_istio_config_read`
+### 9. `list_or_get_resources`
+
+Unified tool to list or get details for services, workloads, apps, and namespaces. If `resourceName` is omitted, returns a compact list. If provided, returns detailed information for that specific resource.
+
+**Parameters**:
+- `resourceType` (string, required): `"service"`, `"workload"`, `"app"`, or `"namespace"`.
+- `namespaces` (string, optional): Comma-separated namespaces. If empty, queries all accessible namespaces.
+- `resourceName` (string, optional): If provided, returns detail view. If empty, returns list view.
+- `clusterName` (string, optional): Cluster name. Defaults to the Kiali configuration cluster.
+
+**Returns (list mode)**:
+- **Services/Workloads**: `map[cluster][]ResourceListItem` with `name`, `namespace`, `health`, `configuration`, `details`, `labels`, `type` (workloads only).
+- **Apps**: `AppListResponse` with `cluster` at root, `applications` array with `name`, `namespace`, `health`, `istio` status, `versions`, `istioReferences`.
+- **Namespaces**: `NamespaceListResponse` with `cluster` at root, `namespaces` array with `name`, `injection`, `health`, `counts`, `validations` (omitted when zero).
+
+**Returns (detail mode)**:
+- **Services**: `ServiceDetailResponse` with service info, istio config, workloads, endpoints, health status, inbound success rate.
+- **Workloads**: `WorkloadDetailResponse` with workload info, replica status, traffic success rates, istio mode/proxy version/sync status, pods, associated services.
+- **Apps**: `AppDetailResponse` with app name, services, istio context, workloads with versions.
+- **Namespaces**: `NamespaceDetailResponse` with istio context (injection, discovery, revision) and resource counts.
+
+**Examples**:
+```json
+{"resourceType": "service", "namespaces": "bookinfo"}
+{"resourceType": "workload", "namespaces": "bookinfo", "resourceName": "reviews-v1"}
+{"resourceType": "namespace"}
+{"resourceType": "namespace", "resourceName": "bookinfo"}
+{"resourceType": "app", "namespaces": "bookinfo", "resourceName": "productpage"}
+```
+
+---
+
+### 10. `manage_istio_config_read`
 
 Read-only: list or get Istio configuration objects.
 
@@ -209,8 +231,8 @@ Read-only: list or get Istio configuration objects.
 - `namespace` (string, optional for list, required for get): Namespace.
 - `group`, `version`, `kind` (required for get): API group/version/kind.
 - `object` (string, required for get): Object name.
-- `service_name` (string, optional): Filter by service (list only).
-- `cluster` (string, optional): Cluster name.
+- `serviceName` (string, optional): Filter by service (list only).
+- `clusterName` (string, optional): Cluster name.
 
 **Examples**:
 ```json
@@ -220,17 +242,21 @@ Read-only: list or get Istio configuration objects.
 
 ---
 
-### 10. `manage_istio_config`
+### 11. `manage_istio_config`
 
 Create, patch, or delete Istio configuration. Always use `confirmed: false` first for a preview, then `confirmed: true` after user confirmation.
 
 **Parameters**:
 - `action` (string, required): `"create"`, `"patch"`, or `"delete"`.
 - `confirmed` (boolean, required): `false` for preview, `true` to execute.
-- `namespace`, `group`, `version`, `kind`, `object` (required).
+- `namespace` (string, required): Namespace.
+- `group` (string, required): API group (e.g. `"networking.istio.io"`).
+- `version` (string, required): API version (e.g. `"v1"`).
+- `kind` (string, required): Kind (e.g. `"VirtualService"`, `"DestinationRule"`).
+- `name` (string, required): Object name.
 - `data` (string, required for create/patch): Complete JSON or YAML manifest.
-- `data_format` (string, optional): `"auto"`, `"json"`, or `"yaml"`.
-- `cluster` (string, optional): Cluster name.
+- `dataFormat` (string, optional): `"auto"`, `"json"`, or `"yaml"`.
+- `clusterName` (string, optional): Cluster name.
 
 **Example**:
 ```json
@@ -241,6 +267,7 @@ Create, patch, or delete Istio configuration. Always use `confirmed: false` firs
   "group": "networking.istio.io",
   "version": "v1",
   "kind": "DestinationRule",
+  "name": "reviews",
   "data": "apiVersion: networking.istio.io/v1\nkind: DestinationRule\nmetadata:\n  name: reviews\nspec:\n  host: reviews\n  trafficPolicy:\n    loadBalancer:\n      simple: LEAST_CONN\n"
 }
 ```
@@ -298,12 +325,13 @@ Tool responses for `list_or_get_resources` and `get_mesh_traffic_graph` are **co
 The AI model calls tools based on user queries:
 - Navigate/show/view → `get_action_ui`
 - Documentation/how-to → `get_citations`
-- Traffic topology/dependencies → `get_mesh_traffic_graph`
-- List/detail resources → `list_or_get_resources`
 - Pod logs → `get_logs`
+- Mesh health/status/versions → `get_mesh_status`
+- Traffic topology/dependencies → `get_mesh_traffic_graph`
 - Resource metrics → `get_metrics`
 - CPU/memory analysis → `get_pod_performance`
 - Distributed traces → `get_traces`
+- List/detail resources → `list_or_get_resources`
 - List/get Istio config → `manage_istio_config_read`
 - Create/patch/delete Istio config → `manage_istio_config`
 
