@@ -76,7 +76,7 @@ func Execute(kialiInterface *mcputil.KialiInterface, args map[string]interface{}
 	// mutations, so the user never sees a YAML editor for a non-existent namespace.
 	{
 		namespace, _ := args["namespace"].(string)
-		cluster, _ := args["cluster"].(string)
+		cluster, _ := args["clusterName"].(string)
 		if cluster == "" {
 			cluster = kialiInterface.Conf.KubernetesConfig.ClusterName
 		}
