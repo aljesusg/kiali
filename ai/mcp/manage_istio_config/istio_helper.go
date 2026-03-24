@@ -39,16 +39,11 @@ func checkNamespaceExists(ctx context.Context, businessLayer *business.Layer, na
 }
 
 // resolveObjectName tries to determine the resource name from the args map.
-// It checks "object" first, then "name" as a fallback, and finally extracts
-// metadata.name from the "data" YAML/JSON payload. If a name is found from a
-// secondary source, it is written back into args["object"] so that downstream
-// functions can use it consistently.
+// It checks "object" first, and if not found, extracts metadata.name from
+// the "data" YAML/JSON payload. If a name is found from data, it is written
+// back into args["object"] so that downstream functions can use it consistently.
 func resolveObjectName(args map[string]interface{}) string {
 	if v, ok := args["object"].(string); ok && strings.TrimSpace(v) != "" {
-		return strings.TrimSpace(v)
-	}
-	if v, ok := args["name"].(string); ok && strings.TrimSpace(v) != "" {
-		args["object"] = strings.TrimSpace(v)
 		return strings.TrimSpace(v)
 	}
 	if data, ok := args["data"].(string); ok && strings.TrimSpace(data) != "" {

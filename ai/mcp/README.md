@@ -253,7 +253,7 @@ Create, patch, or delete Istio configuration. Always use `confirmed: false` firs
 - `group` (string, required): API group (e.g. `"networking.istio.io"`).
 - `version` (string, required): API version (e.g. `"v1"`).
 - `kind` (string, required): Kind (e.g. `"VirtualService"`, `"DestinationRule"`).
-- `name` (string, required): Object name.
+- `object` (string, required): Object name.
 - `data` (string, required for create/patch): Complete JSON or YAML manifest.
 - `dataFormat` (string, optional): `"auto"`, `"json"`, or `"yaml"`.
 - `clusterName` (string, optional): Cluster name.
@@ -267,7 +267,7 @@ Create, patch, or delete Istio configuration. Always use `confirmed: false` firs
   "group": "networking.istio.io",
   "version": "v1",
   "kind": "DestinationRule",
-  "name": "reviews",
+  "object": "reviews",
   "data": "apiVersion: networking.istio.io/v1\nkind: DestinationRule\nmetadata:\n  name: reviews\nspec:\n  host: reviews\n  trafficPolicy:\n    loadBalancer:\n      simple: LEAST_CONN\n"
 }
 ```

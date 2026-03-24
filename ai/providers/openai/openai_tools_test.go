@@ -515,7 +515,6 @@ func TestConvertToolToOpenAI_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 						"version",
 						"kind",
 						"object",
-						"name",
 					},
 					"properties": map[string]interface{}{
 						"action": map[string]interface{}{
@@ -551,7 +550,7 @@ func TestConvertToolToOpenAI_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 							"type":        "string",
 							"description": "Kind of the Istio object (e.g., 'VirtualService', 'DestinationRule').",
 						},
-						"name": map[string]interface{}{
+						"object": map[string]interface{}{
 							"type":        "string",
 							"description": "Name of the Istio object.",
 						},

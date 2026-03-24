@@ -678,14 +678,14 @@ func TestCreateFileAction_Metadata(t *testing.T) {
 	businessLayer, conf := setupTest(t, existingVS())
 
 	args := map[string]interface{}{
-		"action":    "patch",
-		"namespace": "bookinfo",
-		"group":     "networking.istio.io",
-		"version":   "v1",
-		"kind":      "VirtualService",
-		"object":    "reviews",
-		"cluster":   "east",
-		"data":      `{"spec":{"hosts":["reviews"]}}`,
+		"action":      "patch",
+		"namespace":   "bookinfo",
+		"group":       "networking.istio.io",
+		"version":     "v1",
+		"kind":        "VirtualService",
+		"object":      "reviews",
+		"clusterName": "east",
+		"data":        `{"spec":{"hosts":["reviews"]}}`,
 	}
 
 	actions := createFileAction(reqWithAuth().Context(), args, businessLayer, conf)
@@ -708,14 +708,14 @@ func TestCreateFileAction_DeleteStubManifest(t *testing.T) {
 	businessLayer, conf := setupTest(t)
 
 	args := map[string]interface{}{
-		"action":    "delete",
-		"namespace": "bookinfo",
-		"group":     "networking.istio.io",
-		"version":   "v1",
-		"kind":      "VirtualService",
-		"object":    "reviews",
-		"cluster":   "east",
-		"data":      "",
+		"action":      "delete",
+		"namespace":   "bookinfo",
+		"group":       "networking.istio.io",
+		"version":     "v1",
+		"kind":        "VirtualService",
+		"object":      "reviews",
+		"clusterName": "east",
+		"data":        "",
 	}
 
 	actions := createFileAction(reqWithAuth().Context(), args, businessLayer, conf)
@@ -1543,12 +1543,6 @@ func TestResolveObjectName_FromObject(t *testing.T) {
 	assert.Equal(t, "my-vs", resolveObjectName(args))
 }
 
-func TestResolveObjectName_FromNameFallback(t *testing.T) {
-	args := map[string]interface{}{"name": "my-vs"}
-	assert.Equal(t, "my-vs", resolveObjectName(args))
-	assert.Equal(t, "my-vs", args["object"], "should write back to args[\"object\"]")
-}
-
 func TestResolveObjectName_FromDataMetadata(t *testing.T) {
 	args := map[string]interface{}{
 		"data": `{"metadata":{"name":"from-data"},"spec":{"hosts":["x"]}}`,
@@ -1573,25 +1567,9 @@ func TestResolveObjectName_Empty(t *testing.T) {
 func TestResolveObjectName_ObjectTakesPrecedence(t *testing.T) {
 	args := map[string]interface{}{
 		"object": "explicit",
-		"name":   "fallback",
 		"data":   `{"metadata":{"name":"from-data"}}`,
 	}
 	assert.Equal(t, "explicit", resolveObjectName(args))
-}
-
-func TestValidate_PatchWithNameInsteadOfObject(t *testing.T) {
-	args := map[string]interface{}{
-		"action":    "patch",
-		"namespace": "bookinfo",
-		"group":     "networking.istio.io",
-		"version":   "v1",
-		"kind":      "VirtualService",
-		"name":      "reviews",
-		"data":      `{"spec":{"hosts":["reviews"]}}`,
-	}
-	err := validateIstioConfigInput(args)
-	assert.NoError(t, err, "should accept 'name' as fallback for 'object'")
-	assert.Equal(t, "reviews", args["object"], "should populate args[\"object\"] from \"name\"")
 }
 
 func TestValidate_PatchWithNameInData(t *testing.T) {

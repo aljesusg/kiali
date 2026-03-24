@@ -12,18 +12,7 @@ import (
 	"github.com/kiali/kiali/config"
 )
 
-<<<<<<< HEAD
 func IstioPatch(r *http.Request, args map[string]interface{}, businessLayer *business.Layer, conf *config.Config) (res interface{}, status int) {
-	cluster, _ := args["cluster"].(string)
-	namespace, _ := args["namespace"].(string)
-	group, _ := args["group"].(string)
-	version, _ := args["version"].(string)
-	kind, _ := args["kind"].(string)
-	object, _ := args["object"].(string)
-	data, _ := args["data"].(string)
-=======
-func IstioPatch(r *http.Request, args map[string]interface{}, businessLayer *business.Layer, conf *config.Config) (interface{}, int) {
-	// Extract parameters
 	cluster := mcputil.GetStringArg(args, "clusterName")
 	namespace := mcputil.GetStringArg(args, "namespace")
 	group := mcputil.GetStringArg(args, "group")
@@ -31,7 +20,6 @@ func IstioPatch(r *http.Request, args map[string]interface{}, businessLayer *bus
 	kind := mcputil.GetStringArg(args, "kind")
 	object := mcputil.GetStringArg(args, "object")
 	data := mcputil.GetStringArg(args, "data")
->>>>>>> 734631bfe (Fix schema manage_istio_config and readme)
 
 	if cluster == "" {
 		cluster = conf.KubernetesConfig.ClusterName

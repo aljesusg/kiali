@@ -396,7 +396,7 @@ func TestConvertToolToGoogle_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 				Type:        genai.TypeString,
 				Description: "Kind of the Istio object (e.g., 'VirtualService', 'DestinationRule').",
 			},
-			"name": {
+			"object": {
 				Type:        genai.TypeString,
 				Description: "Name of the Istio object.",
 			},
@@ -410,7 +410,7 @@ func TestConvertToolToGoogle_FromToolDefinition_ManageIstioConfig(t *testing.T) 
 				Enum:        []string{"auto", "json", "yaml"},
 			},
 		},
-		Required: []string{"action", "confirmed", "namespace", "group", "version", "kind", "name"},
+		Required: []string{"action", "confirmed", "namespace", "group", "version", "kind", "object"},
 	}
 
 	assert.Equal(t, expected, converted)
