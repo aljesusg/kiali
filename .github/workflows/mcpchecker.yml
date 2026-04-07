@@ -150,7 +150,13 @@ jobs:
 
     - name: Install mcpchecker
       run: |
-        go install github.com/mcpchecker/mcpchecker/cmd/mcpchecker@latest
+        MCPCHECKER_URL=$(curl -sL https://api.github.com/repos/mcpchecker/mcpchecker/releases/latest \
+          | jq -r '.assets[] | select(.name == "mcpchecker-linux-amd64.zip") | .browser_download_url')
+        echo "Downloading mcpchecker from: $MCPCHECKER_URL"
+        curl -sL "$MCPCHECKER_URL" -o /tmp/mcpchecker.zip
+        unzip -o /tmp/mcpchecker.zip -d /tmp/mcpchecker
+        chmod +x /tmp/mcpchecker/mcpchecker
+        sudo mv /tmp/mcpchecker/mcpchecker /usr/local/bin/
 
     - name: Run mcpchecker evaluation
       id: mcpchecker
