@@ -25,6 +25,7 @@ commands:
       echo "Unable to parse kubernetes MCP URL from ${MCP_SERVER_FILE}" >&2
       exit 1
     fi
+
     DEBUG_DIR="${GEVALS_DEBUG_DIR:-}"
     TMP_HOME="$(mktemp -d)"
     mkdir -p "${TMP_HOME}"
