@@ -161,7 +161,7 @@ jobs:
     - name: Run mcpchecker evaluation
       id: mcpchecker
       run: |
-        ARGS=("check" "tests/evals/gemini/eval.yaml" "--output-format" "json")
+        ARGS=("check" "tests/evals/gemini/eval.yaml" "--output" "json")
         if [[ "${{ github.event.inputs.verbose }}" == "true" ]]; then
           ARGS+=("-v")
         fi
