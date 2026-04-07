@@ -4,8 +4,6 @@ metadata:
 commands:
   useVirtualHome: false
   argTemplateMcpServer: "{{ .File }}"
-  argTemplateAllowedTools: "mcp__{{ .ServerName }}__{{ .ToolName }}"
-  allowedToolsJoinSeparator: ","
   runPrompt: |-
     set -euo pipefail
 
@@ -60,17 +58,12 @@ commands:
     cd "${TMP_HOME}"
 
     SERVER_NAME="kubernetes"
-    gemini mcp add "${SERVER_NAME}" "${MCP_URL}" --transport http >/dev/null
+    gemini mcp add "${SERVER_NAME}" "${MCP_URL}" --transport http >/dev/null 2>&1
 
     PROMPT_CONTENT="$(cat "${PROMPT_FILE}")"
 
-    GEMINI_ARGS=("--approval-mode" "yolo" "--output-format" "json")
-
-    ALLOWED_TOOLS="{{ .AllowedToolArgs }}"
-    if [[ -n "${ALLOWED_TOOLS}" ]]; then
-      GEMINI_ARGS+=("--allowed-tools" "${ALLOWED_TOOLS}")
-    fi
-
+    GEMINI_ARGS=("--approval-mode" "yolo" "--output-format" "stream-json")
+    
     GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash-lite}"
     GEMINI_ARGS+=("--model" "${GEMINI_MODEL}")
 
@@ -79,5 +72,5 @@ commands:
       echo "Running gemini with args: ${GEMINI_ARGS[*]}" >> "${DEBUG_DIR}/debug.log"
       gemini "${PROMPT_CONTENT}" "${GEMINI_ARGS[@]}" 2>&1 | tee -a "${DEBUG_DIR}/gemini.log"
     else
-      gemini "${PROMPT_CONTENT}" "${GEMINI_ARGS[@]}"
+      gemini "${PROMPT_CONTENT}" "${GEMINI_ARGS[@]}" 2>/dev/null
     fi
