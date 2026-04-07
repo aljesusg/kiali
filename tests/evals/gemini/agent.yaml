@@ -61,6 +61,8 @@ commands:
     printf '%b' {{ printf "%q" .Prompt }} > "${PROMPT_FILE}"
     PROMPT_CONTENT="$(cat "${PROMPT_FILE}")"
 
+    mkdir -p "${HOME}/.gemini"
+
     SERVER_NAME="kubernetes"
     gemini mcp add "${SERVER_NAME}" "${MCP_URL}" --scope project --transport http --trust >/dev/null
 
