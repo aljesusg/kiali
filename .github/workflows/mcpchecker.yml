@@ -1,0 +1,225 @@
+name: mcpchecker MCP Evaluation
+
+on:
+  # Manual trigger via PR comments
+  issue_comment:
+    types: [created]
+
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: 'Enable verbose output'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'issue_comment' && format('pr-{0}', github.event.issue.number) || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check-trigger:
+    name: Check if evaluation should run
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       contains(github.event.comment.body, '/run-mcpchecker'))
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+      pr-number: ${{ steps.check.outputs.pr-number }}
+      pr-sha: ${{ steps.check.outputs.pr-sha }}
+      is-pr: ${{ steps.check.outputs.is-pr }}
+    steps:
+    - name: Check trigger conditions
+      id: check
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+          PERMISSION=$(gh api "repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission" --jq '.permission')
+
+          if [[ "$PERMISSION" == "admin" || "$PERMISSION" == "write" ]]; then
+            echo "should-run=true" >> $GITHUB_OUTPUT
+            echo "is-pr=true" >> $GITHUB_OUTPUT
+            PR_NUMBER="${{ github.event.issue.number }}"
+            echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+            PR_SHA=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json headRefOid --jq '.headRefOid')
+            echo "pr-sha=$PR_SHA" >> $GITHUB_OUTPUT
+            echo "Pinned to SHA: $PR_SHA"
+          else
+            echo "should-run=false" >> $GITHUB_OUTPUT
+            echo "User ${{ github.event.comment.user.login }} does not have permission to trigger evaluations"
+          fi
+        else
+          echo "should-run=true" >> $GITHUB_OUTPUT
+          echo "is-pr=false" >> $GITHUB_OUTPUT
+          echo "pr-sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+        fi
+
+  run-evaluation:
+    name: Run MCP Evaluation
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should-run == 'true'
+    runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.base_ref || 'master' }}
+      BUILD_BRANCH: ${{ needs.check-trigger.outputs.pr-sha }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ needs.check-trigger.outputs.pr-sha }}
+
+    - name: Install Helm
+      uses: Azure/setup-helm@v5.0.0
+      with:
+        version: "v3.18.4"
+
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version-file: go.mod
+        cache: true
+        cache-dependency-path: go.sum
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install Gemini CLI
+      run: npm install -g @anthropic-ai/claude-code@latest || npm install -g @google/gemini-cli@latest
+
+
+    - name: Build backend
+      run: make clean build
+
+    - name: Setup Kind cluster, install Istio/Kiali, and start Kiali
+      id: setup
+      run: hack/run-integration-tests.sh --test-suite backend --mcp-tools true --setup-only true
+
+    - name: Download kubernetes-mcp-server
+      run: |
+        RELEASE_URL=$(curl -sL https://api.github.com/repos/containers/kubernetes-mcp-server/releases/latest \
+          | jq -r '.assets[] | select(.name | test("linux.*amd64")) | .browser_download_url')
+        echo "Downloading kubernetes-mcp-server from: $RELEASE_URL"
+        curl -sL "$RELEASE_URL" -o kubernetes-mcp-server.tar.gz
+        tar xzf kubernetes-mcp-server.tar.gz
+        chmod +x kubernetes-mcp-server
+        sudo mv kubernetes-mcp-server /usr/local/bin/
+
+    - name: Start kubernetes-mcp-server
+      run: |
+        cat > /tmp/mcp-server-config.toml <<'EOF'
+        toolsets = ["kiali"]
+        log_level = 0
+        port = "8080"
+        [toolset_configs.kiali]
+        url = "http://localhost:20001/kiali"
+        insecure = true
+        EOF
+
+        kubernetes-mcp-server --config /tmp/mcp-server-config.toml &
+        MCP_PID=$!
+        echo "MCP_PID=$MCP_PID" >> $GITHUB_ENV
+
+        echo "Waiting for kubernetes-mcp-server to be ready..."
+        for i in $(seq 1 30); do
+          if curl -s http://localhost:8080/mcp >/dev/null 2>&1; then
+            echo "kubernetes-mcp-server is ready"
+            break
+          fi
+          sleep 2
+        done
+
+    - name: Install mcpchecker
+      run: |
+        go install github.com/mcpchecker/mcpchecker/cmd/mcpchecker@latest
+
+    - name: Run mcpchecker evaluation
+      id: mcpchecker
+      run: |
+        ARGS=("check" "tests/evals/gemini/eval.yaml" "--output-format" "json")
+        if [[ "${{ github.event.inputs.verbose }}" == "true" ]]; then
+          ARGS+=("-v")
+        fi
+
+        mcpchecker "${ARGS[@]}" | tee mcpchecker-output.json
+
+        if [ -f mcpchecker-gemini-eval-out.json ]; then
+          TASKS_TOTAL=$(jq 'length' mcpchecker-gemini-eval-out.json)
+          TASKS_PASSED=$(jq '[.[] | select(.taskPassed == true)] | length' mcpchecker-gemini-eval-out.json)
+          ASSERTIONS_TOTAL=$(jq '[.[] | .assertionResults | to_entries | length] | add // 0' mcpchecker-gemini-eval-out.json)
+          ASSERTIONS_PASSED=$(jq '[.[] | .assertionResults | to_entries[] | select(.value.passed == true)] | length' mcpchecker-gemini-eval-out.json)
+
+          if [ "$TASKS_TOTAL" -gt 0 ]; then
+            TASK_PASS_RATE=$(awk "BEGIN {printf \"%.2f\", $TASKS_PASSED / $TASKS_TOTAL}")
+          else
+            TASK_PASS_RATE="0"
+          fi
+
+          PASSED="false"
+          if awk "BEGIN {exit !($TASK_PASS_RATE >= 0.8)}"; then
+            PASSED="true"
+          fi
+
+          echo "tasks-passed=$TASKS_PASSED" >> $GITHUB_OUTPUT
+          echo "tasks-total=$TASKS_TOTAL" >> $GITHUB_OUTPUT
+          echo "task-pass-rate=$TASK_PASS_RATE" >> $GITHUB_OUTPUT
+          echo "assertions-passed=$ASSERTIONS_PASSED" >> $GITHUB_OUTPUT
+          echo "assertions-total=$ASSERTIONS_TOTAL" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+    - name: Upload mcpchecker results
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: mcpchecker-results
+        path: mcpchecker-gemini-eval-out.json
+        if-no-files-found: warn
+
+    - name: Cleanup
+      if: always()
+      run: |
+        if [ -n "$MCP_PID" ]; then
+          kill "$MCP_PID" 2>/dev/null || true
+        fi
+
+    - name: Save evaluation context
+      if: always() && needs.check-trigger.outputs.is-pr == 'true'
+      run: |
+        mkdir -p eval-context
+        cat > eval-context/context.json << EOF
+        {
+          "pr_number": "${{ needs.check-trigger.outputs.pr-number }}",
+          "pr_sha": "${{ needs.check-trigger.outputs.pr-sha }}",
+          "tasks_passed": "${{ steps.mcpchecker.outputs.tasks-passed }}",
+          "tasks_total": "${{ steps.mcpchecker.outputs.tasks-total }}",
+          "task_pass_rate": "${{ steps.mcpchecker.outputs.task-pass-rate }}",
+          "assertions_passed": "${{ steps.mcpchecker.outputs.assertions-passed }}",
+          "assertions_total": "${{ steps.mcpchecker.outputs.assertions-total }}",
+          "passed": "${{ steps.mcpchecker.outputs.passed }}"
+        }
+        EOF
+
+    - name: Upload PR context
+      if: always() && needs.check-trigger.outputs.is-pr == 'true'
+      uses: actions/upload-artifact@v7
+      with:
+        name: eval-context
+        path: eval-context/
+        retention-days: 1
