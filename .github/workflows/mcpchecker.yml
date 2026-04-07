@@ -99,8 +99,10 @@ jobs:
         node-version: '22'
 
     - name: Install Gemini CLI
-      run: npm install -g @anthropic-ai/claude-code@latest || npm install -g @google/gemini-cli@latest
+      run: npm install -g @google/gemini-cli@latest
 
+    - name: Build frontend
+      run: make build-ui
 
     - name: Build backend
       run: make clean build
