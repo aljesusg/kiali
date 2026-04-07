@@ -121,10 +121,8 @@ jobs:
         RELEASE_URL=$(curl -sL https://api.github.com/repos/containers/kubernetes-mcp-server/releases/latest \
           | jq -r '.assets[] | select(.name | test("linux.*amd64")) | .browser_download_url')
         echo "Downloading kubernetes-mcp-server from: $RELEASE_URL"
-        curl -sL "$RELEASE_URL" -o kubernetes-mcp-server.tar.gz
-        tar xzf kubernetes-mcp-server.tar.gz
-        chmod +x kubernetes-mcp-server
-        sudo mv kubernetes-mcp-server /usr/local/bin/
+        curl -sL "$RELEASE_URL" -o /usr/local/bin/kubernetes-mcp-server
+        chmod +x /usr/local/bin/kubernetes-mcp-server
 
     - name: Start kubernetes-mcp-server
       run: |
