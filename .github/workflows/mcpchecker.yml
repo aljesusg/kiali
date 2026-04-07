@@ -124,16 +124,27 @@ jobs:
         curl -sL "$RELEASE_URL" -o /usr/local/bin/kubernetes-mcp-server
         chmod +x /usr/local/bin/kubernetes-mcp-server
 
+    - name: Resolve Kiali URL
+      run: |
+        kubectl wait --for=jsonpath='{.status.loadBalancer.ingress}' -n istio-system service/kiali --timeout=120s
+        INGRESS_IP="$(kubectl get svc kiali -n istio-system -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+        KIALI_URL="http://${INGRESS_IP}/kiali"
+        echo "KIALI_URL=${KIALI_URL}" >> $GITHUB_ENV
+        echo "Resolved Kiali URL: ${KIALI_URL}"
+
     - name: Start kubernetes-mcp-server
       run: |
-        cat > /tmp/mcp-server-config.toml <<'EOF'
+        cat > /tmp/mcp-server-config.toml <<EOF
         toolsets = ["kiali"]
         log_level = 0
         port = "8080"
         [toolset_configs.kiali]
-        url = "http://localhost:20001/kiali"
+        url = "${KIALI_URL}"
         insecure = true
         EOF
+
+        echo "MCP server config:"
+        cat /tmp/mcp-server-config.toml
 
         kubernetes-mcp-server --config /tmp/mcp-server-config.toml &
         MCP_PID=$!
