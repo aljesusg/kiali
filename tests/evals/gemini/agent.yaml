@@ -25,11 +25,28 @@ commands:
       echo "Unable to parse kubernetes MCP URL from ${MCP_SERVER_FILE}" >&2
       exit 1
     fi
-    DEBUG_DIR="${GEVALS_DEBUG_DIR:-}"
+
+    PROMPT_FILE="$(mktemp)"
+    printf '%b' {{ printf "%q" .Prompt }} > "${PROMPT_FILE}"
+
+    ORIGINAL_HOME="${HOME:-}"
     TMP_HOME="$(mktemp -d)"
     mkdir -p "${TMP_HOME}"
-    cd "${TMP_HOME}"
 
+    KUBECONFIG_VALUE="${KUBECONFIG:-}"
+    if [[ -n "${KUBECONFIG_VALUE}" ]]; then
+       export KUBECONFIG="${KUBECONFIG_VALUE}"
+    else
+      if [[ -n "${ORIGINAL_HOME}" && -d "${ORIGINAL_HOME}/.kube" && -f "${ORIGINAL_HOME}/.kube/config" ]]; then
+        mkdir -p "${TMP_HOME}/.kube"
+        cp -R "${ORIGINAL_HOME}/.kube/." "${TMP_HOME}/.kube" 2>/dev/null || true
+        if [[ -f "${TMP_HOME}/.kube/config" ]]; then
+           export KUBECONFIG="${TMP_HOME}/.kube/config"
+        fi
+      fi
+    fi
+
+    DEBUG_DIR="${GEVALS_DEBUG_DIR:-}"
     cleanup() {
       local exit_status="$1"
 
@@ -50,27 +67,29 @@ commands:
 
       rm -rf "${TMP_HOME}"
       rm -f "${PROMPT_FILE}"
-      gemini mcp remove "$SERVER_NAME" >/dev/null 2>&1 || true
 
       trap - EXIT
       exit "${exit_status}"
     }
     trap 'cleanup $?' EXIT
 
-    PROMPT_FILE="$(mktemp)"
-    printf '%b' {{ printf "%q" .Prompt }} > "${PROMPT_FILE}"
-    PROMPT_CONTENT="$(cat "${PROMPT_FILE}")"
-
-    mkdir -p "${HOME}/.gemini"
+    export HOME="${TMP_HOME}"
+    cd "${TMP_HOME}"
 
     SERVER_NAME="kubernetes"
-    gemini mcp add "${SERVER_NAME}" "${MCP_URL}" --scope project --transport http --trust >/dev/null
+    gemini mcp add "${SERVER_NAME}" "${MCP_URL}" --transport http >/dev/null
 
-    # Ensure cleanup on exit (success or failure)
+    PROMPT_CONTENT="$(cat "${PROMPT_FILE}")"
+
+    GEMINI_ARGS=("--allowed-mcp-server-names" "${SERVER_NAME}" "--approval-mode" "yolo" "--output-format" "json")
+
     GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash-lite}"
+    GEMINI_ARGS+=("--model" "${GEMINI_MODEL}")
 
-    gemini "${PROMPT_CONTENT}" \
-          --allowed-mcp-server-names "$SERVER_NAME" \
-          --approval-mode yolo \
-          --output-format json \
-          --model "$GEMINI_MODEL"
+    if [[ -n "${DEBUG_DIR}" ]]; then
+      GEMINI_ARGS+=(-d)
+      echo "Running gemini with args: ${GEMINI_ARGS[*]}" >> "${DEBUG_DIR}/debug.log"
+      gemini "${PROMPT_CONTENT}" "${GEMINI_ARGS[@]}" 2>&1 | tee -a "${DEBUG_DIR}/gemini.log"
+    else
+      gemini "${PROMPT_CONTENT}" "${GEMINI_ARGS[@]}"
+    fi
