@@ -58,15 +58,17 @@ commands:
     cd "${TMP_HOME}"
 
     SERVER_NAME="kubernetes"
-    gemini mcp add "${SERVER_NAME}" "${MCP_URL}" --transport sse >/dev/null 2>&1
 
-    # Verify the MCP was added successfully in the temp environment
-    echo "--- MCP Status ---" >> "${DEBUG_DIR}/debug.log"
-    gemini mcp list >> "${DEBUG_DIR}/debug.log" 2>&1
-
-    # Verify which tools the model sees
-    echo "--- Tool Manifest ---" >> "${DEBUG_DIR}/debug.log"
-    gemini "What tools do you have access to?" --model "${GEMINI_MODEL}" >> "${DEBUG_DIR}/debug.log" 2>&1
+    cat > "${TMP_HOME}/.gemini/settings.json" <<SETTINGS_EOF
+    {
+      "mcpServers": {
+        "${SERVER_NAME}": {
+          "url": "${MCP_URL}",
+          "transport": "http"
+        }
+      }
+    }
+    SETTINGS_EOF
 
     PROMPT_CONTENT="$(cat "${PROMPT_FILE}")"
 
