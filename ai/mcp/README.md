@@ -371,5 +371,19 @@ See existing tools for end-to-end examples.
 # Token Consumption
 <!-- TOKENS-CONSUMPTION-START -->
 
+### Evaluation Summary
 
+| Metric | Value |
+|--------|-------|
+| Tasks Passed | 2/2 (100%) |
+| Assertions Pass Rate | 100% |
+| Total Tokens Estimate | 10029 |
+| MCP Schema Tokens | 3356 |
+
+### Per-Task Breakdown
+
+| Task | Tokens Estimate | MCP Schema Tokens | Passed |
+|------|----------------:|------------------:|--------|
+| get-namespaces | 7195 | 1678 | ✅ |
+| get-service-detail | 2834 | 1678 | ✅ |
 <!-- TOKENS-CONSUMPTION-END -->
