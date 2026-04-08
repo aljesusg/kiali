@@ -6,6 +6,7 @@ on:
     types: [completed]
 
 permissions:
+  contents: read
   pull-requests: write
   actions: read
 
@@ -30,6 +31,12 @@ jobs:
           echo "Evaluation job was skipped, no report needed"
         fi
 
+    - name: Checkout code
+      if: steps.check.outputs.should-report == 'true'
+      uses: actions/checkout@v6
+      with:
+        ref: master
+
     - name: Download evaluation context
       if: steps.check.outputs.should-report == 'true'
       uses: actions/download-artifact@v8
@@ -39,42 +46,30 @@ jobs:
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Download mcpchecker results
+      if: steps.check.outputs.should-report == 'true'
+      uses: actions/download-artifact@v8
+      with:
+        name: mcpchecker-results
+        path: mcpchecker-results/
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Post results comment
       if: steps.check.outputs.should-report == 'true'
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         PR_NUMBER=$(jq -r '.pr_number' eval-context/context.json)
-        PR_SHA=$(jq -r '.pr_sha' eval-context/context.json)
-        TASKS_PASSED=$(jq -r '.tasks_passed' eval-context/context.json)
-        TASKS_TOTAL=$(jq -r '.tasks_total' eval-context/context.json)
-        TASK_PASS_RATE=$(jq -r '.task_pass_rate' eval-context/context.json)
-        ASSERTIONS_PASSED=$(jq -r '.assertions_passed' eval-context/context.json)
-        ASSERTIONS_TOTAL=$(jq -r '.assertions_total' eval-context/context.json)
-        PASSED=$(jq -r '.passed' eval-context/context.json)
+        RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
 
-        PASS_RATE=$(awk "BEGIN {printf \"%.1f\", $TASK_PASS_RATE * 100}")
+        PR_TOKEN_FILE="mcpchecker-results/ai/mcp/TOKEN_RESULTS.json"
+        BASELINE_FILE="ai/mcp/TOKEN_RESULTS.json"
 
-        if [[ "${{ github.event.workflow_run.conclusion }}" != "success" ]]; then
-          OVERALL="⚠️ Workflow failed"
-        elif [[ "$PASSED" == "true" ]]; then
-          OVERALL="✅ Passed"
-        else
-          OVERALL="❌ Failed"
-        fi
+        COMMENT_BODY=$(hack/mcp/generate-eval-report.sh \
+          "${PR_TOKEN_FILE}" \
+          "${BASELINE_FILE}" \
+          "eval-context/context.json" \
+          "${RUN_URL}")
 
-        gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body "$(cat <<EOF
-        ## mcpchecker MCP Evaluation Results
-
-        **Commit:** \`${PR_SHA:0:7}\`
-        **Summary:** ${TASKS_PASSED}/${TASKS_TOTAL} tasks passed (${PASS_RATE}%)
-
-        | Metric | Result |
-        |--------|--------|
-        | Tasks Passed | ${TASKS_PASSED}/${TASKS_TOTAL} |
-        | Assertions Passed | ${ASSERTIONS_PASSED}/${ASSERTIONS_TOTAL} |
-        | Overall | ${OVERALL} |
-
-        [View full results](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }})
-        EOF
-        )"
+        gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body "${COMMENT_BODY}"
