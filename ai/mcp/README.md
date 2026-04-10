@@ -392,17 +392,17 @@ See existing tools for end-to-end examples.
 
 | Metric | Value |
 |--------|-------|
-| Tasks Passed | 2/2 (100%) |
+| Tasks Passed | 1/2 (50%) |
 | Assertions Pass Rate | 100% |
-| Total Tokens Estimate | 9821 |
+| Total Tokens Estimate | 20740 |
 | MCP Schema Tokens | 3356 |
 
 ### Per-Task Breakdown
 
 | Task | Tokens Estimate | MCP Schema Tokens | Passed |
 |------|----------------:|------------------:|--------|
-| get-namespaces | 6997 | 1678 | ✅ |
-| get-service-detail | 2824 | 1678 | ✅ |
+| get-namespaces | 17906 | 1678 | ❌ |
+| get-service-detail | 2834 | 1678 | ✅ |
 <!-- TOKENS-CONSUMPTION-END -->
 
 ## MCP evaluation (CI)
