@@ -1,4 +1,4 @@
-name: mcpchecker MCP Evaluation
+name: MCP-Checker Evaluation
 
 on:
   # Manual trigger via PR comments
@@ -158,13 +158,23 @@ jobs:
       if: always() && hashFiles('mcpchecker-results/mcpchecker-gemini-eval-out.json') != ''
       run: make mcp-eval-summary >> $GITHUB_STEP_SUMMARY
 
+    # upload-artifact creates no artifact when the path is missing; downstream workflow_run jobs need the name to exist.
+    - name: Ensure mcpchecker results file for artifact
+      if: always()
+      run: |
+        mkdir -p mcpchecker-results
+        if [[ ! -f mcpchecker-results/mcpchecker-gemini-eval-out.json ]]; then
+          echo '[]' > mcpchecker-results/mcpchecker-gemini-eval-out.json
+          echo "::warning::mcpchecker did not produce mcpchecker-gemini-eval-out.json; uploaded empty JSON so the mcpchecker-results artifact exists for report/baseline jobs."
+        fi
+
     - name: Upload mcpchecker results
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: mcpchecker-results
         path: mcpchecker-results/mcpchecker-gemini-eval-out.json
-        if-no-files-found: warn
+        retention-days: 14
 
     - name: Cleanup
       if: always()

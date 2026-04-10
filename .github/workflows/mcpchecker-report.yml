@@ -1,8 +1,8 @@
-name: mcpchecker MCP Evaluation - Report
+name: MCP-Checker Evaluation - PR Results Report
 
 on:
   workflow_run:
-    workflows: ["mcpchecker MCP Evaluation"]
+    workflows: ["MCP-Checker Evaluation"]
     types: [completed]
 
 permissions:
@@ -62,13 +62,16 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Download mcpchecker results (PR run)
+      id: download_mcp
       if: steps.check.outputs.should-report == 'true'
+      continue-on-error: true
       uses: actions/download-artifact@v8
       with:
         name: mcpchecker-results
         path: pr-eval/
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.event.workflow_run.repository.full_name }}
 
     - name: Post results comment
       if: steps.check.outputs.should-report == 'true'
@@ -82,13 +85,24 @@ jobs:
         PR_NUMBER=$(jq -r '.pr_number' eval-context/context.json)
         RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
 
+        if [[ "${{ steps.download_mcp.outcome }}" != "success" ]]; then
+          {
+            echo "## mcpchecker evaluation report (skipped)"
+            echo ""
+            echo "Could not download the \`mcpchecker-results\` artifact from [workflow run](${RUN_URL})."
+            echo "Typical causes: the **mcpchecker MCP Evaluation** workflow on the default branch is missing the upload step (merge the latest workflow), the eval job was cancelled before upload, or the artifact expired."
+          } > skip-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file skip-comment.md
+          exit 0
+        fi
+
         # master baseline (committed): tests/evals/mcpchecker-results/
         BASE="${GITHUB_WORKSPACE}/tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json"
         # this PR's CI run output: ./mcpchecker-results/
         CURRENT="${GITHUB_WORKSPACE}/pr-eval/mcpchecker-results/mcpchecker-gemini-eval-out.json"
 
         if [[ ! -f "${CURRENT}" ]]; then
-          echo "Missing PR evaluation output: ${CURRENT}" >&2
+          echo "Missing PR evaluation output after download: ${CURRENT}" >&2
           exit 1
         fi
 
