@@ -1,14 +1,12 @@
-name: mcpchecker MCP Evaluation
+name: MCP-Checker Evaluation
 
 on:
-  # Manual trigger via PR comments
   issue_comment:
     types: [created]
-
   workflow_dispatch:
     inputs:
       verbose:
-        description: 'Enable verbose output'
+        description: "Enable verbose output"
         required: false
         type: boolean
         default: false
@@ -100,7 +98,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '24'
+        node-version: "24"
         cache: yarn
         cache-dependency-path: frontend/yarn.lock
 
@@ -153,47 +151,58 @@ jobs:
     - name: Generate token summary
       if: always() && hashFiles('mcpchecker-gemini-eval-out.json') != ''
       run: |
-        make mcp-eval-save-tokens
+        make mcp-eval-copy-results
         make mcp-eval-summary >> $GITHUB_STEP_SUMMARY
+
+    - name: Post PR evaluation comment
+      if: always() && needs.check-trigger.outputs.is-pr == 'true' && hashFiles('tests/evals/results/mcpchecker-gemini-eval-out.json') != ''
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -euo pipefail
+        PR_NUMBER="${{ needs.check-trigger.outputs.pr-number }}"
+        PR_SHA="${{ needs.check-trigger.outputs.pr-sha }}"
+        RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        MCPCHECKER="$(go env GOPATH)/bin/mcpchecker"
+        PR_RAW="tests/evals/results/mcpchecker-gemini-eval-out.json"
+
+        git fetch origin master
+        BASE_TMP="$(mktemp)"
+        if ! git show "origin/master:tests/evals/results/mcpchecker-gemini-eval-out.json" > "${BASE_TMP}" 2>/dev/null; then
+          echo "::warning::No MCP eval baseline on origin/master (tests/evals/results/mcpchecker-gemini-eval-out.json)"
+          rm -f "${BASE_TMP}"
+          BASE_TMP=""
+        fi
+
+        COMMENT_FILE="$(mktemp)"
+        trap 'rm -f "${BASE_TMP}" "${COMMENT_FILE}"' EXIT
+
+        {
+          echo "## mcpchecker MCP Evaluation"
+          echo ""
+          echo "**Commit:** \`${PR_SHA:0:7}\` — [View full workflow run](${RUN_URL})"
+          echo ""
+          if [[ -n "${BASE_TMP}" && -s "${BASE_TMP}" && -f "${PR_RAW}" ]]; then
+            "${MCPCHECKER}" diff --base "${BASE_TMP}" --current "${PR_RAW}" --output markdown
+          else
+            echo "⚠️ Could not compare runs: baseline on master or PR results is missing."
+          fi
+        } > "${COMMENT_FILE}"
+
+        gh pr comment "${PR_NUMBER}" --repo "${{ github.repository }}" --body-file "${COMMENT_FILE}"
 
     - name: Upload mcpchecker results
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: mcpchecker-results
-        path: |
-          mcpchecker-gemini-eval-out.json
-          ai/mcp/TOKEN_RESULTS.json
+        # Upload the directory so artifact layout matches download expectations (single-file uploads can flatten paths).
+        path: tests/evals/results/
         if-no-files-found: warn
 
     - name: Cleanup
       if: always()
       run: make mcp-stop-server
-
-    - name: Save evaluation context
-      if: always() && needs.check-trigger.outputs.is-pr == 'true'
-      run: |
-        mkdir -p eval-context
-        cat > eval-context/context.json << EOF
-        {
-          "pr_number": "${{ needs.check-trigger.outputs.pr-number }}",
-          "pr_sha": "${{ needs.check-trigger.outputs.pr-sha }}",
-          "tasks_passed": "${{ steps.mcpchecker.outputs.tasks-passed }}",
-          "tasks_total": "${{ steps.mcpchecker.outputs.tasks-total }}",
-          "task_pass_rate": "${{ steps.mcpchecker.outputs.task-pass-rate }}",
-          "assertions_passed": "${{ steps.mcpchecker.outputs.assertions-passed }}",
-          "assertions_total": "${{ steps.mcpchecker.outputs.assertions-total }}",
-          "passed": "${{ steps.mcpchecker.outputs.passed }}"
-        }
-        EOF
-
-    - name: Upload PR context
-      if: always() && needs.check-trigger.outputs.is-pr == 'true'
-      uses: actions/upload-artifact@v7
-      with:
-        name: eval-context
-        path: eval-context/
-        retention-days: 1
 
   update-baseline:
     name: Update Token Baseline
@@ -209,18 +218,63 @@ jobs:
       with:
         ref: master
 
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version-file: go.mod
+        cache: true
+        cache-dependency-path: go.sum
+
+    - name: Install mcpchecker
+      run: make mcp-install-mcpchecker
+
     - name: Download mcpchecker results
       uses: actions/download-artifact@v8
       with:
         name: mcpchecker-results
         path: mcpchecker-results/
 
-    - name: Update TOKEN_RESULTS.json and README
+    - name: Update eval results baseline and README
       run: |
-        cp mcpchecker-results/ai/mcp/TOKEN_RESULTS.json ai/mcp/TOKEN_RESULTS.json
+        mkdir -p tests/evals/results
+        MCPCHECKER="$(go env GOPATH)/bin/mcpchecker"
+        PREVIOUS="$(mktemp)"
+        trap 'rm -f "${PREVIOUS}"' EXIT
+        PREVIOUS_EXISTS=0
+        if [[ -f tests/evals/results/mcpchecker-gemini-eval-out.json ]]; then
+          cp tests/evals/results/mcpchecker-gemini-eval-out.json "${PREVIOUS}"
+          PREVIOUS_EXISTS=1
+        fi
+
+        ARTIFACT_JSON=""
+        for candidate in \
+          mcpchecker-results/tests/evals/results/mcpchecker-gemini-eval-out.json \
+          mcpchecker-results/mcpchecker-gemini-eval-out.json; do
+          if [[ -f "${candidate}" ]]; then
+            ARTIFACT_JSON="${candidate}"
+            break
+          fi
+        done
+        if [[ -z "${ARTIFACT_JSON}" ]]; then
+          ARTIFACT_JSON="$(find mcpchecker-results -type f -name mcpchecker-gemini-eval-out.json | head -1)"
+        fi
+        if [[ -z "${ARTIFACT_JSON}" || ! -f "${ARTIFACT_JSON}" ]]; then
+          echo "::error::mcpchecker-gemini-eval-out.json not found in artifact (expected under mcpchecker-results/)"
+          find mcpchecker-results -type f -ls 2>/dev/null || ls -laR mcpchecker-results
+          exit 1
+        fi
+        cp "${ARTIFACT_JSON}" tests/evals/results/mcpchecker-gemini-eval-out.json
+
+        if [[ "${PREVIOUS_EXISTS}" -eq 1 ]]; then
+          "${MCPCHECKER}" diff --base "${PREVIOUS}" --current tests/evals/results/mcpchecker-gemini-eval-out.json --output markdown > baseline-pr-diff.md
+        else
+          echo "_No previous committed baseline on \`master\` at this path — first update or new file._" > baseline-pr-diff.md
+        fi
+
         make mcp-update-token-readme
-        echo "Updated baseline:"
-        cat ai/mcp/TOKEN_RESULTS.json
+        echo "Updated baseline summary:"
+        "${MCPCHECKER}" summary tests/evals/results/mcpchecker-gemini-eval-out.json -o json | head -c 2000
+        echo
 
     - name: Create PR with updated baseline
       env:
@@ -232,7 +286,7 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
         git checkout -B "$BRANCH"
-        git add ai/mcp/TOKEN_RESULTS.json ai/mcp/README.md
+        git add tests/evals/results/mcpchecker-gemini-eval-out.json ai/mcp/README.md
 
         if git diff --staged --quiet; then
           echo "No changes to commit"
@@ -244,28 +298,31 @@ jobs:
 
         EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number' || echo "")
 
-        PR_BODY="$(cat <<EOF
-        ## MCP Evaluation Token Baseline Update
-
-        Updates the token consumption baseline from the latest evaluation run on master.
-
-        **Run details:**
-        - Commit: ${{ needs.check-trigger.outputs.pr-sha }}
-        - Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-        ---
-        *This PR was automatically generated by the mcpchecker workflow.*
-        EOF
-        )"
+        {
+          echo "## MCP Evaluation Token Baseline Update"
+          echo ""
+          echo "Updates the committed MCP evaluation results (\`tests/evals/results/mcpchecker-gemini-eval-out.json\`) and the token consumption section in \`ai/mcp/README.md\` from the latest **MCP-Checker Evaluation** run on \`master\`."
+          echo ""
+          echo "### mcpchecker diff (previous baseline → new baseline)"
+          echo ""
+          cat baseline-pr-diff.md
+          echo ""
+          echo "**Run details**"
+          echo "- Workflow trigger commit: ${{ needs.check-trigger.outputs.pr-sha }}"
+          echo "- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "---"
+          echo "*This PR was automatically generated by the MCP-Checker Evaluation workflow.*"
+        } > pr-body.md
 
         if [ -n "$EXISTING_PR" ]; then
           echo "Updating existing PR #$EXISTING_PR"
-          gh pr edit "$EXISTING_PR" --body "$PR_BODY"
+          gh pr edit "$EXISTING_PR" --body-file pr-body.md
         else
           echo "Creating new PR"
           gh pr create \
             --title "chore: update MCP evaluation token baseline" \
-            --body "$PR_BODY" \
+            --body-file pr-body.md \
             --base master \
             --head "$BRANCH"
         fi
