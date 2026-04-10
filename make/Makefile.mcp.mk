@@ -6,7 +6,7 @@ MCP_SERVER_PORT ?= 8080
 MCP_SERVER_CONFIG ?= /tmp/mcp-server-config.toml
 MCP_EVAL_CONFIG ?= tests/evals/gemini/eval.yaml
 MCP_EVAL_RESULTS ?= mcpchecker-gemini-eval-out.json
-MCP_TOKEN_RESULTS ?= ai/mcp/TOKEN_RESULTS.json
+MCP_EVAL_RESULTS_COMMITTED ?= tests/evals/results/mcpchecker-gemini-eval-out.json
 KIALI_URL ?= $(shell kubectl get svc kiali -n istio-system -o=jsonpath='http://{.status.loadBalancer.ingress[0].ip}/kiali' 2>/dev/null)
 
 ## mcp-install-mcpchecker: Download and install the latest mcpchecker binary
@@ -89,17 +89,16 @@ mcp-eval-summary:
 	fi
 	@${GOPATH}/bin/mcpchecker summary ${MCP_EVAL_RESULTS} --github-output
 
-## mcp-eval-save-tokens: Generate and save the token results JSON baseline
-mcp-eval-save-tokens:
+## mcp-eval-copy-results: Copy raw mcpchecker output to tests/evals/results/ (committed baseline path)
+mcp-eval-copy-results:
 	@if [ ! -f ${MCP_EVAL_RESULTS} ]; then \
 		echo "No results file found at ${MCP_EVAL_RESULTS}. Run 'make mcp-run-eval' first."; \
 		exit 1; \
 	fi
-	@echo "Saving token results to ${MCP_TOKEN_RESULTS}..."
-	@${GOPATH}/bin/mcpchecker summary ${MCP_EVAL_RESULTS} --output json > ${MCP_TOKEN_RESULTS}
-	@echo "Token baseline saved:"
-	@cat ${MCP_TOKEN_RESULTS}
+	@echo "Copying ${MCP_EVAL_RESULTS} to ${MCP_EVAL_RESULTS_COMMITTED}..."
+	@mkdir -p $(dir ${MCP_EVAL_RESULTS_COMMITTED})
+	@cp -f ${MCP_EVAL_RESULTS} ${MCP_EVAL_RESULTS_COMMITTED}
 
-## mcp-update-token-readme: Update the token consumption section in ai/mcp/README.md from TOKEN_RESULTS.json
+## mcp-update-token-readme: Update the token consumption section in ai/mcp/README.md from tests/evals/results/mcpchecker-gemini-eval-out.json (via mcpchecker summary)
 mcp-update-token-readme:
 	@${ROOTDIR}/hack/mcp/update-token-readme.sh

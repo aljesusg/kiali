@@ -72,6 +72,10 @@ helm-charts
 ai-tools
 ai-dev-context
 
+# Gemini / MCP: root-only artifacts (committed baseline remains under tests/evals/results/)
+/.gemini
+/mcpchecker-gemini-eval-out.json
+
 # Ignore ansible if a dev has installed it under kiali for convenience
 ansible
 
