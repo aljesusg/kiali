@@ -39,6 +39,13 @@ _output
 # VSCode
 .vscode/
 
+# Gemini CLI
+.gemini/
+
+# MCP checker run output at repo root only (committed baseline stays under tests/evals/mcpchecker-results/)
+/mcpchecker-results/
+/mcpchecker-gemini-eval-out.json
+
 # Swagger
 swagger.json
 

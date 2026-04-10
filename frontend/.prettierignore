@@ -1,3 +1,8 @@
 # Ignore all build artifacts. These are generated automatically and if prettier
 # touches these up then it will change the build commit hash.
 frontend/build
+
+# mcpchecker eval JSON (generated; not stable under prettier -- bail breaks pre-commit)
+../mcpchecker-results/
+../mcpchecker-gemini-eval-out.json
+../tests/evals/mcpchecker-results/

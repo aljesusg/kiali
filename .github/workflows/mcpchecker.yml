@@ -82,6 +82,9 @@ jobs:
       with:
         ref: ${{ needs.check-trigger.outputs.pr-sha }}
 
+    - name: Set GOPATH for MCP tooling
+      run: echo "GOPATH=${GOPATH:-$HOME/go}" >> $GITHUB_ENV
+
     - name: Install Helm
       uses: Azure/setup-helm@v5.0.0
       with:
@@ -123,11 +126,12 @@ jobs:
         MCP_EVAL_ARGS="${{ github.event.inputs.verbose == 'true' && '-v' || '' }}"
         make mcp-run-eval MCP_EVAL_ARGS="${MCP_EVAL_ARGS}"
 
-        if [ -f mcpchecker-gemini-eval-out.json ]; then
-          TASKS_TOTAL=$(jq 'length' mcpchecker-gemini-eval-out.json)
-          TASKS_PASSED=$(jq '[.[] | select(.taskPassed == true)] | length' mcpchecker-gemini-eval-out.json)
-          ASSERTIONS_TOTAL=$(jq '[.[] | .assertionResults | to_entries | length] | add // 0' mcpchecker-gemini-eval-out.json)
-          ASSERTIONS_PASSED=$(jq '[.[] | .assertionResults | to_entries[] | select(.value.passed == true)] | length' mcpchecker-gemini-eval-out.json)
+        EVAL_JSON="mcpchecker-results/mcpchecker-gemini-eval-out.json"
+        if [ -f "${EVAL_JSON}" ]; then
+          TASKS_TOTAL=$(jq 'length' "${EVAL_JSON}")
+          TASKS_PASSED=$(jq '[.[] | select(.taskPassed == true)] | length' "${EVAL_JSON}")
+          ASSERTIONS_TOTAL=$(jq '[.[] | .assertionResults | to_entries | length] | add // 0' "${EVAL_JSON}")
+          ASSERTIONS_PASSED=$(jq '[.[] | .assertionResults | to_entries[] | select(.value.passed == true)] | length' "${EVAL_JSON}")
 
           if [ "$TASKS_TOTAL" -gt 0 ]; then
             TASK_PASS_RATE=$(awk "BEGIN {printf \"%.2f\", $TASKS_PASSED / $TASKS_TOTAL}")
@@ -150,20 +154,16 @@ jobs:
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-    - name: Generate token summary
-      if: always() && hashFiles('mcpchecker-gemini-eval-out.json') != ''
-      run: |
-        make mcp-eval-save-tokens
-        make mcp-eval-summary >> $GITHUB_STEP_SUMMARY
+    - name: Evaluation summary (step summary)
+      if: always() && hashFiles('mcpchecker-results/mcpchecker-gemini-eval-out.json') != ''
+      run: make mcp-eval-summary >> $GITHUB_STEP_SUMMARY
 
     - name: Upload mcpchecker results
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: mcpchecker-results
-        path: |
-          mcpchecker-gemini-eval-out.json
-          ai/mcp/TOKEN_RESULTS.json
+        path: mcpchecker-results/mcpchecker-gemini-eval-out.json
         if-no-files-found: warn
 
     - name: Cleanup
@@ -209,30 +209,83 @@ jobs:
       with:
         ref: master
 
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version-file: go.mod
+        cache: true
+        cache-dependency-path: go.sum
+
+    - name: Install mcpchecker
+      run: |
+        export GOPATH="${GOPATH:-$HOME/go}"
+        echo "GOPATH=$GOPATH" >> "$GITHUB_ENV"
+        make mcp-install-mcpchecker
+
     - name: Download mcpchecker results
       uses: actions/download-artifact@v8
       with:
         name: mcpchecker-results
-        path: mcpchecker-results/
+        path: baseline-download/
 
-    - name: Update TOKEN_RESULTS.json and README
-      run: |
-        cp mcpchecker-results/ai/mcp/TOKEN_RESULTS.json ai/mcp/TOKEN_RESULTS.json
-        make mcp-update-token-readme
-        echo "Updated baseline:"
-        cat ai/mcp/TOKEN_RESULTS.json
-
-    - name: Create PR with updated baseline
+    - name: Apply baseline updates and open PR
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        set -euo pipefail
+        export GOPATH="${GOPATH:-$HOME/go}"
+        MCPCHECKER="${GOPATH}/bin/mcpchecker"
+
         BRANCH="chore/update-mcp-eval-token-baseline"
+        RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        SHA="${{ needs.check-trigger.outputs.pr-sha }}"
+
+        OLD_EVAL="$(mktemp)"
+        trap 'rm -f "${OLD_EVAL}"' EXIT
+
+        if git cat-file -e "HEAD:tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json" 2>/dev/null; then
+          git show "HEAD:tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json" > "${OLD_EVAL}"
+        elif git cat-file -e "HEAD:mcpchecker-results/mcpchecker-gemini-eval-out.json" 2>/dev/null; then
+          git show "HEAD:mcpchecker-results/mcpchecker-gemini-eval-out.json" > "${OLD_EVAL}"
+        else
+          echo '[]' > "${OLD_EVAL}"
+        fi
+
+        mkdir -p tests/evals/mcpchecker-results
+        # Run output is ./mcpchecker-results/; promote into the committed baseline path for master
+        cp baseline-download/mcpchecker-results/mcpchecker-gemini-eval-out.json tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json
+        NEW_EVAL="${GITHUB_WORKSPACE}/tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json"
+
+        make mcp-update-token-readme
+
+        {
+          echo "## MCP evaluation baseline update"
+          echo ""
+          echo "Commits the latest \`mcpchecker check\` output to \`tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json\` and refreshes the token table in \`ai/mcp/README.md\` (via \`mcpchecker summary\` on that JSON)."
+          echo ""
+          echo "**Commit:** [\`${SHA:0:7}\`](https://github.com/${{ github.repository }}/commit/${SHA}) — [workflow run](${RUN_URL})"
+          echo ""
+          if jq -e 'length > 0' "${OLD_EVAL}" >/dev/null 2>&1; then
+            "${MCPCHECKER}" diff --base "${OLD_EVAL}" --current "${NEW_EVAL}" --output markdown
+          else
+            echo "_No prior \`tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json\` on \`master\` (first baseline)._"
+            echo ""
+            echo "### New run (summary)"
+            echo ""
+            echo '```text'
+            "${MCPCHECKER}" summary "${NEW_EVAL}" --output text
+            echo '```'
+          fi
+          echo ""
+          echo "---"
+          echo "*This PR was automatically generated by the mcpchecker workflow.*"
+        } > pr-body.md
 
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
         git checkout -B "$BRANCH"
-        git add ai/mcp/TOKEN_RESULTS.json ai/mcp/README.md
+        git add tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json ai/mcp/README.md
 
         if git diff --staged --quiet; then
           echo "No changes to commit"
@@ -244,28 +297,14 @@ jobs:
 
         EXISTING_PR=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number' || echo "")
 
-        PR_BODY="$(cat <<EOF
-        ## MCP Evaluation Token Baseline Update
-
-        Updates the token consumption baseline from the latest evaluation run on master.
-
-        **Run details:**
-        - Commit: ${{ needs.check-trigger.outputs.pr-sha }}
-        - Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-        ---
-        *This PR was automatically generated by the mcpchecker workflow.*
-        EOF
-        )"
-
         if [ -n "$EXISTING_PR" ]; then
           echo "Updating existing PR #$EXISTING_PR"
-          gh pr edit "$EXISTING_PR" --body "$PR_BODY"
+          gh pr edit "$EXISTING_PR" --body-file pr-body.md
         else
           echo "Creating new PR"
           gh pr create \
             --title "chore: update MCP evaluation token baseline" \
-            --body "$PR_BODY" \
+            --body-file pr-body.md \
             --base master \
             --head "$BRANCH"
         fi
