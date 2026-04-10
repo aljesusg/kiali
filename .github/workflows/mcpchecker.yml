@@ -237,6 +237,8 @@ jobs:
       with:
         name: mcpchecker-results
         path: baseline-download/
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.run_id }}
 
     - name: Apply baseline updates and open PR
       env:
@@ -262,8 +264,27 @@ jobs:
         fi
 
         mkdir -p tests/evals/mcpchecker-results
-        # Run output is ./mcpchecker-results/; promote into the committed baseline path for master
-        cp baseline-download/mcpchecker-results/mcpchecker-gemini-eval-out.json tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json
+        # Artifact layout can be baseline-download/mcpchecker-results/... (preserved) or flattened to baseline-download/*.json
+        EVAL_SRC=""
+        for p in \
+          baseline-download/mcpchecker-results/mcpchecker-gemini-eval-out.json \
+          baseline-download/mcpchecker-gemini-eval-out.json \
+          baseline-download/tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json; do
+          if [[ -f "$p" ]]; then
+            EVAL_SRC="$p"
+            break
+          fi
+        done
+        if [[ -z "${EVAL_SRC}" ]]; then
+          EVAL_SRC="$(find baseline-download -name 'mcpchecker-gemini-eval-out.json' -type f 2>/dev/null | head -n1)"
+        fi
+        if [[ -z "${EVAL_SRC}" || ! -f "${EVAL_SRC}" ]]; then
+          echo "::error::Could not find mcpchecker-gemini-eval-out.json under baseline-download"
+          find baseline-download -type f 2>/dev/null || ls -laR baseline-download || true
+          exit 1
+        fi
+        echo "Using eval artifact: ${EVAL_SRC}"
+        cp "${EVAL_SRC}" tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json
         NEW_EVAL="${GITHUB_WORKSPACE}/tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json"
 
         make mcp-update-token-readme
