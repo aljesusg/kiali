@@ -196,7 +196,8 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: mcpchecker-results
-        path: tests/evals/results/mcpchecker-gemini-eval-out.json
+        # Upload the directory so artifact layout matches download expectations (single-file uploads can flatten paths).
+        path: tests/evals/results/
         if-no-files-found: warn
 
     - name: Cleanup
@@ -235,7 +236,25 @@ jobs:
 
     - name: Update eval results baseline and README
       run: |
-        cp mcpchecker-results/tests/evals/results/mcpchecker-gemini-eval-out.json tests/evals/results/mcpchecker-gemini-eval-out.json
+        mkdir -p tests/evals/results
+        ARTIFACT_JSON=""
+        for candidate in \
+          mcpchecker-results/tests/evals/results/mcpchecker-gemini-eval-out.json \
+          mcpchecker-results/mcpchecker-gemini-eval-out.json; do
+          if [[ -f "${candidate}" ]]; then
+            ARTIFACT_JSON="${candidate}"
+            break
+          fi
+        done
+        if [[ -z "${ARTIFACT_JSON}" ]]; then
+          ARTIFACT_JSON="$(find mcpchecker-results -type f -name mcpchecker-gemini-eval-out.json | head -1)"
+        fi
+        if [[ -z "${ARTIFACT_JSON}" || ! -f "${ARTIFACT_JSON}" ]]; then
+          echo "::error::mcpchecker-gemini-eval-out.json not found in artifact (expected under mcpchecker-results/)"
+          find mcpchecker-results -type f -ls 2>/dev/null || ls -laR mcpchecker-results
+          exit 1
+        fi
+        cp "${ARTIFACT_JSON}" tests/evals/results/mcpchecker-gemini-eval-out.json
         make mcp-update-token-readme
         echo "Updated baseline summary:"
         "$(go env GOPATH)/bin/mcpchecker" summary tests/evals/results/mcpchecker-gemini-eval-out.json -o json | head -c 2000
