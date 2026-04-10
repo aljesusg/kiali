@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
-# Updates the token consumption section in ai/mcp/README.md
-# from the data in ai/mcp/TOKEN_RESULTS.json.
+# Updates the token consumption section in ai/mcp/README.md from a summary of
+# tests/evals/results/mcpchecker-gemini-eval-out.json (mcpchecker summary -o json).
 #
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOTDIR="${SCRIPT_DIR}/../.."
 
-TOKEN_FILE="${ROOTDIR}/ai/mcp/TOKEN_RESULTS.json"
+EVAL_OUT="${ROOTDIR}/tests/evals/results/mcpchecker-gemini-eval-out.json"
 README_FILE="${ROOTDIR}/ai/mcp/README.md"
 
-if [[ ! -f "${TOKEN_FILE}" ]]; then
-  echo "Error: ${TOKEN_FILE} not found" >&2
+if [[ ! -f "${EVAL_OUT}" ]]; then
+  echo "Error: ${EVAL_OUT} not found" >&2
   exit 1
 fi
 
@@ -20,6 +20,20 @@ if [[ ! -f "${README_FILE}" ]]; then
   echo "Error: ${README_FILE} not found" >&2
   exit 1
 fi
+
+MCPCHECKER="$(command -v mcpchecker 2>/dev/null || true)"
+if [[ -z "${MCPCHECKER}" ]]; then
+  MCPCHECKER="${GOPATH:-$(go env GOPATH)}/bin/mcpchecker"
+fi
+if [[ ! -x "${MCPCHECKER}" ]]; then
+  echo "Error: mcpchecker not found (install: make mcp-install-mcpchecker)" >&2
+  exit 1
+fi
+
+TOKEN_FILE="$(mktemp)"
+trap 'rm -f "${TOKEN_FILE}"' EXIT
+
+"${MCPCHECKER}" summary "${EVAL_OUT}" -o json > "${TOKEN_FILE}"
 
 TASKS_TOTAL=$(jq -r '.tasksTotal' "${TOKEN_FILE}")
 TASKS_PASSED=$(jq -r '.tasksPassed' "${TOKEN_FILE}")

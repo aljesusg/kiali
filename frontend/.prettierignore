@@ -1,3 +1,6 @@
 # Ignore all build artifacts. These are generated automatically and if prettier
 # touches these up then it will change the build commit hash.
 frontend/build
+
+# Raw mcpchecker eval output (repo root; large, tooling-specific JSON)
+../tests/evals/results/mcpchecker-gemini-eval-out.json

@@ -424,10 +424,10 @@ The repository runs [mcpchecker](https://github.com/mcpchecker/mcpchecker) in Gi
 | Piece | Location |
 |-------|----------|
 | Main workflow | `.github/workflows/mcpchecker.yml` |
-| PR results comment | `.github/workflows/mcpchecker-report.yml` |
+| PR results comment | `.github/workflows/mcpchecker.yml` (`post-eval-report` job) |
 | Make targets (install, run eval, token summary) | `make/Makefile.mcp.mk` |
 
 ### Token baseline
 
-Successful runs that are **not** tied to a PR comment trigger (for example a manual run on `master`) can update the committed token baseline via the **Update Token Baseline** job: it refreshes `ai/mcp/TOKEN_RESULTS.json` and the [Token Consumption](#token-consumption) section below (through `hack/mcp/update-token-readme.sh`) and may open an automated PR.
+Successful runs that are **not** tied to a PR comment trigger (for example a manual run on `master`) can update the committed eval baseline via the **Update Token Baseline** job: it refreshes `tests/evals/results/mcpchecker-gemini-eval-out.json` and the [Token Consumption](#token-consumption) section below (through `hack/mcp/update-token-readme.sh`, which runs `mcpchecker summary` on that file) and may open an automated PR.
 
