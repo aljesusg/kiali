@@ -73,8 +73,19 @@ func ChatMCP(
 			RespondWithError(w, http.StatusInternalServerError, "AI initialization error: "+err.Error())
 			return
 		}
+		var args map[string]interface{}
+		if r.Body != nil && r.ContentLength != 0 {
+			if err := json.NewDecoder(r.Body).Decode(&args); err != nil {
+				http.Error(w, "Invalid request body", http.StatusBadRequest)
+				return
+			}
+		}
+		if args == nil {
+			args = map[string]interface{}{}
+		}
 		handlers := mcp.MCPToolHandlers
-		if r.Header.Get("kiali_chatbot") != "" {
+		if r.Header.Get("Kiali-UI") != "" {
+			args["mcp_mode"] = true
 			handlers = mcp.DefaultToolHandlers
 		}
 		tool, ok := handlers[toolName]
@@ -85,16 +96,6 @@ func ChatMCP(
 		if !conf.ExternalServices.Tracing.Enabled && mcp.IsTraceTool(toolName) {
 			RespondWithError(w, http.StatusNotFound, fmt.Sprintf("Tool '%s' is not available when tracing is disabled", toolName))
 			return
-		}
-		var args map[string]interface{}
-		if r.Body != nil && r.ContentLength != 0 {
-			if err := json.NewDecoder(r.Body).Decode(&args); err != nil {
-				http.Error(w, "Invalid request body", http.StatusBadRequest)
-				return
-			}
-		}
-		if args == nil {
-			args = map[string]interface{}{}
 		}
 		kialiInterface, err := GetKialiInterface(r, conf, kialiCache, clientFactory, cpm, prom, traceClientLoader, grafana, perses, discovery)
 		if err != nil {

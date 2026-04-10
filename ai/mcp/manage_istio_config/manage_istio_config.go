@@ -63,6 +63,8 @@ func ExecuteReadOnly(kialiInterface *mcputil.KialiInterface, args map[string]int
 func Execute(kialiInterface *mcputil.KialiInterface, args map[string]interface{}) (interface{}, int) {
 	action := mcputil.GetStringArg(args, "action")
 	confirmed := mcputil.AsBool(args["confirmed"])
+	mcpMode := mcputil.AsBoolOrDefault(args, false, "mcp_mode")
+
 	if action == "list" || action == "get" {
 		return fmt.Errorf("for list and get actions use the manage_istio_config_read tool"), http.StatusBadRequest
 	}
@@ -98,7 +100,7 @@ func Execute(kialiInterface *mcputil.KialiInterface, args map[string]interface{}
 
 	if action == "create" || action == "patch" {
 		previewActions := createFileAction(kialiInterface.Request.Context(), args, kialiInterface.BusinessLayer, kialiInterface.Conf)
-		if !confirmed {
+		if !confirmed && !mcpMode {
 			// Return the editor action. The UI can apply directly from the editor.
 			return struct {
 				Actions []get_action_ui.Action `json:"actions"`
@@ -129,13 +131,16 @@ func Execute(kialiInterface *mcputil.KialiInterface, args map[string]interface{}
 		if status != http.StatusOK {
 			res = fmt.Sprintf("ERROR: %s", res)
 		}
-		return struct {
-			Actions []get_action_ui.Action `json:"actions"`
-			Result  interface{}            `json:"result"`
-		}{
-			Actions: previewActions,
-			Result:  res,
-		}, http.StatusOK
+		if !mcpMode {
+			return struct {
+				Actions []get_action_ui.Action `json:"actions"`
+				Result  interface{}            `json:"result"`
+			}{
+				Actions: previewActions,
+				Result:  res,
+			}, http.StatusOK
+		}
+		return res, http.StatusOK
 	}
 
 	if action == "delete" && !confirmed {

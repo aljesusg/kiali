@@ -78,6 +78,15 @@ func AsBool(v interface{}) bool {
 	}
 }
 
+func AsBoolOrDefault(args map[string]interface{}, defaultValue bool, keys ...string) bool {
+	for _, key := range keys {
+		if val, ok := args[key]; ok {
+			return AsBool(val)
+		}
+	}
+	return defaultValue
+}
+
 // AsBoolFromArgs returns the boolean value for the first present key in args (JSON Schema camelCase vs snake_case).
 func AsBoolFromArgs(args map[string]interface{}, keys ...string) bool {
 	for _, key := range keys {
