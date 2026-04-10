@@ -240,31 +240,21 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         run-id: ${{ github.run_id }}
 
-    - name: Apply baseline updates and open PR
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Compare MCP eval baseline (mcpchecker summary)
+      id: compare_baseline
       run: |
         set -euo pipefail
         export GOPATH="${GOPATH:-$HOME/go}"
-        MCPCHECKER="${GOPATH}/bin/mcpchecker"
-
-        BRANCH="chore/update-mcp-eval-token-baseline"
-        RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        SHA="${{ needs.check-trigger.outputs.pr-sha }}"
-
-        OLD_EVAL="$(mktemp)"
-        trap 'rm -f "${OLD_EVAL}"' EXIT
+        mkdir -p .cache/mcp-baseline
 
         if git cat-file -e "HEAD:tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json" 2>/dev/null; then
-          git show "HEAD:tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json" > "${OLD_EVAL}"
+          git show "HEAD:tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json" > .cache/mcp-baseline/old-eval.json
         elif git cat-file -e "HEAD:mcpchecker-results/mcpchecker-gemini-eval-out.json" 2>/dev/null; then
-          git show "HEAD:mcpchecker-results/mcpchecker-gemini-eval-out.json" > "${OLD_EVAL}"
+          git show "HEAD:mcpchecker-results/mcpchecker-gemini-eval-out.json" > .cache/mcp-baseline/old-eval.json
         else
-          echo '[]' > "${OLD_EVAL}"
+          echo '[]' > .cache/mcp-baseline/old-eval.json
         fi
 
-        mkdir -p tests/evals/mcpchecker-results
-        # Artifact layout can be baseline-download/mcpchecker-results/... (preserved) or flattened to baseline-download/*.json
         EVAL_SRC=""
         for p in \
           baseline-download/mcpchecker-results/mcpchecker-gemini-eval-out.json \
@@ -284,7 +274,28 @@ jobs:
           exit 1
         fi
         echo "Using eval artifact: ${EVAL_SRC}"
-        cp "${EVAL_SRC}" tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json
+        echo "EVAL_SRC_PATH=${EVAL_SRC}" >> "$GITHUB_ENV"
+
+        bash "${GITHUB_WORKSPACE}/hack/mcp/compare-mcp-eval-baseline.sh" \
+          "${GITHUB_WORKSPACE}/.cache/mcp-baseline/old-eval.json" \
+          "${EVAL_SRC}"
+
+    - name: Apply baseline updates and open PR
+      if: steps.compare_baseline.outputs.baseline-changed == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -euo pipefail
+        export GOPATH="${GOPATH:-$HOME/go}"
+        MCPCHECKER="${GOPATH}/bin/mcpchecker"
+
+        BRANCH="chore/update-mcp-eval-token-baseline"
+        RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        SHA="${{ needs.check-trigger.outputs.pr-sha }}"
+
+        OLD_EVAL="${GITHUB_WORKSPACE}/.cache/mcp-baseline/old-eval.json"
+        mkdir -p tests/evals/mcpchecker-results
+        cp "${EVAL_SRC_PATH}" tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json
         NEW_EVAL="${GITHUB_WORKSPACE}/tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json"
 
         make mcp-update-token-readme
