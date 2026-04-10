@@ -1,4 +1,4 @@
-name: mcpchecker MCP Evaluation
+name: MCP-Checker Evaluation
 
 on:
   issue_comment:
@@ -10,9 +10,6 @@ on:
         required: false
         type: boolean
         default: false
-  workflow_run:
-    types: [completed]
-    workflows: ["mcpchecker MCP Evaluation"]
 
 permissions:
   contents: write
@@ -20,7 +17,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_run' && format('report-{0}', github.event.workflow_run.id) || (github.event_name == 'issue_comment' && format('pr-{0}', github.event.issue.number) || github.ref) }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'issue_comment' && format('pr-{0}', github.event.issue.number) || github.ref }}
   cancel-in-progress: true
 
 defaults:
@@ -157,6 +154,43 @@ jobs:
         make mcp-eval-copy-results
         make mcp-eval-summary >> $GITHUB_STEP_SUMMARY
 
+    - name: Post PR evaluation comment
+      if: always() && needs.check-trigger.outputs.is-pr == 'true' && hashFiles('tests/evals/results/mcpchecker-gemini-eval-out.json') != ''
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -euo pipefail
+        PR_NUMBER="${{ needs.check-trigger.outputs.pr-number }}"
+        PR_SHA="${{ needs.check-trigger.outputs.pr-sha }}"
+        RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        MCPCHECKER="$(go env GOPATH)/bin/mcpchecker"
+        PR_RAW="tests/evals/results/mcpchecker-gemini-eval-out.json"
+
+        git fetch origin master
+        BASE_TMP="$(mktemp)"
+        if ! git show "origin/master:tests/evals/results/mcpchecker-gemini-eval-out.json" > "${BASE_TMP}" 2>/dev/null; then
+          echo "::warning::No MCP eval baseline on origin/master (tests/evals/results/mcpchecker-gemini-eval-out.json)"
+          rm -f "${BASE_TMP}"
+          BASE_TMP=""
+        fi
+
+        COMMENT_FILE="$(mktemp)"
+        trap 'rm -f "${BASE_TMP}" "${COMMENT_FILE}"' EXIT
+
+        {
+          echo "## mcpchecker MCP Evaluation"
+          echo ""
+          echo "**Commit:** \`${PR_SHA:0:7}\` — [View full workflow run](${RUN_URL})"
+          echo ""
+          if [[ -n "${BASE_TMP}" && -s "${BASE_TMP}" && -f "${PR_RAW}" ]]; then
+            "${MCPCHECKER}" diff --base "${BASE_TMP}" --current "${PR_RAW}" --output markdown
+          else
+            echo "⚠️ Could not compare runs: baseline on master or PR results is missing."
+          fi
+        } > "${COMMENT_FILE}"
+
+        gh pr comment "${PR_NUMBER}" --repo "${{ github.repository }}" --body-file "${COMMENT_FILE}"
+
     - name: Upload mcpchecker results
       if: always()
       uses: actions/upload-artifact@v7
@@ -168,31 +202,6 @@ jobs:
     - name: Cleanup
       if: always()
       run: make mcp-stop-server
-
-    - name: Save evaluation context
-      if: always() && needs.check-trigger.outputs.is-pr == 'true'
-      run: |
-        mkdir -p eval-context
-        cat > eval-context/context.json << EOF
-        {
-          "pr_number": "${{ needs.check-trigger.outputs.pr-number }}",
-          "pr_sha": "${{ needs.check-trigger.outputs.pr-sha }}",
-          "tasks_passed": "${{ steps.mcpchecker.outputs.tasks-passed }}",
-          "tasks_total": "${{ steps.mcpchecker.outputs.tasks-total }}",
-          "task_pass_rate": "${{ steps.mcpchecker.outputs.task-pass-rate }}",
-          "assertions_passed": "${{ steps.mcpchecker.outputs.assertions-passed }}",
-          "assertions_total": "${{ steps.mcpchecker.outputs.assertions-total }}",
-          "passed": "${{ steps.mcpchecker.outputs.passed }}"
-        }
-        EOF
-
-    - name: Upload PR context
-      if: always() && needs.check-trigger.outputs.is-pr == 'true'
-      uses: actions/upload-artifact@v7
-      with:
-        name: eval-context
-        path: eval-context/
-        retention-days: 1
 
   update-baseline:
     name: Update Token Baseline
@@ -279,89 +288,3 @@ jobs:
             --base master \
             --head "$BRANCH"
         fi
-
-  post-eval-report:
-    name: Post Evaluation Results
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'issue_comment'
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check if evaluation ran
-      id: check
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        JOB_CONCLUSION=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs" \
-          --jq '.jobs[] | select(.name == "Run MCP Evaluation") | .conclusion')
-
-        if [[ -n "$JOB_CONCLUSION" && "$JOB_CONCLUSION" != "skipped" ]]; then
-          echo "should-report=true" >> $GITHUB_OUTPUT
-        else
-          echo "should-report=false" >> $GITHUB_OUTPUT
-          echo "Evaluation job was skipped, no report needed"
-        fi
-
-    - name: Checkout code
-      if: steps.check.outputs.should-report == 'true'
-      uses: actions/checkout@v6
-      with:
-        ref: master
-
-    - name: Set up Go
-      if: steps.check.outputs.should-report == 'true'
-      uses: actions/setup-go@v6
-      with:
-        go-version-file: go.mod
-        cache: true
-        cache-dependency-path: go.sum
-
-    - name: Install mcpchecker
-      if: steps.check.outputs.should-report == 'true'
-      run: make mcp-install-mcpchecker
-
-    - name: Download evaluation context
-      if: steps.check.outputs.should-report == 'true'
-      uses: actions/download-artifact@v8
-      with:
-        name: eval-context
-        path: eval-context/
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Download mcpchecker results
-      if: steps.check.outputs.should-report == 'true'
-      uses: actions/download-artifact@v8
-      with:
-        name: mcpchecker-results
-        path: mcpchecker-results/
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Post results comment
-      if: steps.check.outputs.should-report == 'true'
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        PR_NUMBER=$(jq -r '.pr_number' eval-context/context.json)
-        PR_SHA=$(jq -r '.pr_sha' eval-context/context.json)
-        RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
-
-        MCPCHECKER="$(go env GOPATH)/bin/mcpchecker"
-        PR_RAW="mcpchecker-results/tests/evals/results/mcpchecker-gemini-eval-out.json"
-        BASE_RAW="tests/evals/results/mcpchecker-gemini-eval-out.json"
-
-        COMMENT_FILE="$(mktemp)"
-        trap 'rm -f "${COMMENT_FILE}"' EXIT
-
-        {
-          echo "## mcpchecker MCP Evaluation"
-          echo ""
-          echo "**Commit:** \`${PR_SHA:0:7}\` — [View full workflow run](${RUN_URL})"
-          echo ""
-          if [[ -f "${BASE_RAW}" && -f "${PR_RAW}" ]]; then
-            "${MCPCHECKER}" diff --base "${BASE_RAW}" --current "${PR_RAW}" --output markdown
-          else
-            echo "⚠️ Could not compare runs: baseline (\`${BASE_RAW}\`) or PR results (\`${PR_RAW}\`) is missing."
-          fi
-        } > "${COMMENT_FILE}"
-
-        gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file "${COMMENT_FILE}"
