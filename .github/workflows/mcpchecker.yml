@@ -38,12 +38,16 @@ jobs:
       pr-number: ${{ steps.check.outputs.pr-number }}
       pr-sha: ${{ steps.check.outputs.pr-sha }}
       is-pr: ${{ steps.check.outputs.is-pr }}
+      kubernetes-mcp-server-repo: ${{ steps.check.outputs.kubernetes_mcp_server_repo }}
     steps:
     - name: Check trigger conditions
       id: check
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COMMENT_BODY: ${{ github.event_name == 'issue_comment' && github.event.comment.body || '' }}
       run: |
+        echo "kubernetes_mcp_server_repo=" >> $GITHUB_OUTPUT
+
         if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
           PERMISSION=$(gh api "repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission" --jq '.permission')
 
@@ -56,6 +60,13 @@ jobs:
             PR_SHA=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json headRefOid --jq '.headRefOid')
             echo "pr-sha=$PR_SHA" >> $GITHUB_OUTPUT
             echo "Pinned to SHA: $PR_SHA"
+
+            K8S_MCP_SERVER_REPO=""
+            if [[ "$COMMENT_BODY" =~ (^|[[:space:]])KUBERNETES_MCP_SERVER_REPO=([^[:space:]]+) ]]; then
+              K8S_MCP_SERVER_REPO="${BASH_REMATCH[2]}"
+              echo "Using KUBERNETES_MCP_SERVER_REPO=${K8S_MCP_SERVER_REPO}"
+            fi
+            echo "kubernetes_mcp_server_repo=${K8S_MCP_SERVER_REPO}" >> $GITHUB_OUTPUT
           else
             echo "should-run=false" >> $GITHUB_OUTPUT
             echo "User ${{ github.event.comment.user.login }} does not have permission to trigger evaluations"
@@ -74,6 +85,7 @@ jobs:
     env:
       TARGET_BRANCH: ${{ github.base_ref || 'master' }}
       BUILD_BRANCH: ${{ needs.check-trigger.outputs.pr-sha }}
+      KUBERNETES_MCP_SERVER_REPO: ${{ needs.check-trigger.outputs.kubernetes-mcp-server-repo }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
