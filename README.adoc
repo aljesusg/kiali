@@ -4,6 +4,7 @@
 
 image:https://img.shields.io/badge/license-Apache2-blue.svg["Apache 2.0 license", link="LICENSE"]
 
+
 == Introduction
 
 link:https://kiali.io/[kiali] is a management console for Istio service mesh. Kiali can be quickly installed as an Istio add-on or integrated as a trusted component within a production environment.
