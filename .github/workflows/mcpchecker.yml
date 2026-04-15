@@ -133,11 +133,12 @@ jobs:
         MCP_EVAL_ARGS="${{ github.event.inputs.verbose == 'true' && '-v' || '' }}"
         make mcp-run-eval MCP_EVAL_ARGS="${MCP_EVAL_ARGS}"
 
-        if [ -f mcpchecker-gemini-eval-out.json ]; then
-          TASKS_TOTAL=$(jq 'length' mcpchecker-gemini-eval-out.json)
-          TASKS_PASSED=$(jq '[.[] | select(.taskPassed == true)] | length' mcpchecker-gemini-eval-out.json)
-          ASSERTIONS_TOTAL=$(jq '[.[] | .assertionResults | to_entries | length] | add // 0' mcpchecker-gemini-eval-out.json)
-          ASSERTIONS_PASSED=$(jq '[.[] | .assertionResults | to_entries[] | select(.value.passed == true)] | length' mcpchecker-gemini-eval-out.json)
+        RESULTS_JSON="tests/evals/results/mcpchecker-gemini-eval-out.json"
+        if [ -f "${RESULTS_JSON}" ]; then
+          TASKS_TOTAL=$(jq 'length' "${RESULTS_JSON}")
+          TASKS_PASSED=$(jq '[.[] | select(.taskPassed == true)] | length' "${RESULTS_JSON}")
+          ASSERTIONS_TOTAL=$(jq '[.[] | .assertionResults | to_entries | length] | add // 0' "${RESULTS_JSON}")
+          ASSERTIONS_PASSED=$(jq '[.[] | .assertionResults | to_entries[] | select(.value.passed == true)] | length' "${RESULTS_JSON}")
 
           if [ "$TASKS_TOTAL" -gt 0 ]; then
             TASK_PASS_RATE=$(awk "BEGIN {printf \"%.2f\", $TASKS_PASSED / $TASKS_TOTAL}")
@@ -161,9 +162,9 @@ jobs:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
     - name: Generate token summary
-      if: always() && hashFiles('mcpchecker-gemini-eval-out.json') != ''
+      if: always() && hashFiles('tests/evals/results/mcpchecker-gemini-eval-out.json') != ''
       run: |
-        make mcp-eval-copy-results
+        make mcp-eval-summary-json >> $GITHUB_STEP_SUMMARY
         make mcp-eval-summary >> $GITHUB_STEP_SUMMARY
 
     - name: Post PR evaluation comment

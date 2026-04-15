@@ -5,7 +5,7 @@
 MCP_SERVER_PORT ?= 8080
 MCP_SERVER_CONFIG ?= /tmp/mcp-server-config.toml
 MCP_EVAL_CONFIG ?= tests/evals/gemini/eval.yaml
-MCP_EVAL_RESULTS ?= tests/evals/mcpchecker-results/mcpchecker-gemini-eval-out.json
+MCP_EVAL_RESULTS ?= tests/evals/results/mcpchecker-gemini-eval-out.json
 KIALI_URL ?= $(shell kubectl get svc kiali -n istio-system -o=jsonpath='http://{.status.loadBalancer.ingress[0].ip}/kiali' 2>/dev/null)
 KUBERNETES_MCP_SERVER_REPO ?=
 
@@ -134,6 +134,7 @@ mcp-eval-diff:
 mcp-clean-eval-results:
 	@rm -rf mcpchecker-results
 	@rm -f mcpchecker-gemini-eval-out.json
+	@rm -f tests/evals/results/mcpchecker-gemini-eval-out.json
 
 ## mcp-update-token-readme: Update the token consumption section in ai/mcp/README.md from mcpchecker summary of MCP_EVAL_RESULTS
 mcp-update-token-readme:
