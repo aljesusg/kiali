@@ -27,7 +27,7 @@ mcp-install-mcpchecker:
 		set -e ;\
 		echo "Installing mcpchecker $(MCPCHECKER_VERSION) to $(MCPCHECKER)..." ;\
 		mkdir -p $(shell dirname $(MCPCHECKER)) ;\
-		GOBIN=$(shell dirname $(MCPCHECKER)) go install github.com/mcpchecker/mcpchecker/cmd/mcpchecker@$(MCPCHECKER_VERSION) ;\
+		GOBIN=$(shell dirname $(MCPCHECKER)) GOTOOLCHAIN=auto go install github.com/mcpchecker/mcpchecker/cmd/mcpchecker@$(MCPCHECKER_VERSION) ;\
 	}
 
 ## mcp-install-kubernetes-mcp-server: Install kubernetes-mcp-server from release or repo#branch
@@ -62,7 +62,7 @@ mcp-install-kubernetes-mcp-server:
 		set -e; \
 		echo "Installing kubernetes-mcp-server $(KUBERNETES_MCP_SERVER_VERSION) to $(KUBERNETES_MCP_SERVER)..."; \
 		mkdir -p "$(shell dirname $(KUBERNETES_MCP_SERVER))"; \
-		GOBIN="$(shell dirname $(KUBERNETES_MCP_SERVER))" go install github.com/containers/kubernetes-mcp-server/cmd/kubernetes-mcp-server@$(KUBERNETES_MCP_SERVER_VERSION); \
+		GOBIN="$(shell dirname $(KUBERNETES_MCP_SERVER))" GOTOOLCHAIN=auto go install github.com/containers/kubernetes-mcp-server/cmd/kubernetes-mcp-server@$(KUBERNETES_MCP_SERVER_VERSION); \
 	fi
 
 ## mcp-install-gemini-cli: Install the Gemini CLI via npm
